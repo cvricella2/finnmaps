@@ -1,0 +1,231 @@
+html,
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: "Avenir Next W00","Helvetica Neue",Helvetica,Arial,sans-serif;
+  overflow: hidden;
+}
+
+#flexContainer{
+  position: absolute;
+  z-index: 1;
+  height: 100%;
+  width: 100%;
+  display:flex;
+  flex-direction: row;
+}
+
+#viewDiv {
+  border:solid;
+  flex:3;
+}
+
+#sidebar {
+    display:flex;
+    flex-direction: column;
+    flex:2;
+    padding:1rem;
+    overflow: auto;
+    border: solid;
+   }
+
+#sidebarHeader{
+  display:flex;
+  flex-direction:column;
+}
+
+.headerItem{
+  align-self: center;
+  margin:.5rem;
+}
+
+#sidebarContent {
+  display:flex;
+  flex-direction: column;
+}
+
+#visitInfo p {
+  margin:0rem;
+}
+
+.sidebarItem {
+  margin:.5rem;
+}
+
+.sidebarButton {
+  text-align: justify;
+  font-style: bold;
+  text-decoration: none;
+  display:none;
+  color:black;
+}
+
+.sidebarButton:hover{
+  color:blue;
+}
+
+.queryImg {
+  max-width:100%;
+}
+
+#sidebarFooter{
+  margin-top: auto;
+  align-self: center;
+}
+
+#sidebarFooter p {
+  margin:0;
+  padding:0;
+}
+
+.formContainer {
+  display:none;
+  flex-direction: column;
+  background-color: white;
+  position:absolute;
+  z-index: 3;
+  width:35%;
+  height:50%;
+  left: 50%;
+  top:50%;
+  transform: translate(-50%, -50%);
+  padding:1rem 2rem 2rem 2rem;
+  overflow: auto;
+}
+
+.formContainer h3{
+  margin: .5rem;
+  text-align: center;
+}
+
+.formField {
+  padding:.5rem;
+  background: #f1f1f1;
+  border: none;
+}
+
+.formLabel{
+  margin: .5rem 0 .5rem 0;
+  font-weight: bold;
+}
+
+.finnMapBtn {
+  display: inline-block;
+  border: 1px solid black;
+  padding: .75rem 1.5rem;
+  margin: .5rem 0 .5rem 0;
+  text-decoration: none;
+  background: #ccc;
+  color: #222;
+  font-family: inherit;
+  font-weight: bold;
+  font-size: inherit;
+  line-height: 1;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.finnMapBtn:hover {
+  background:#bdbdbd;
+}
+
+.finnMapBtn:active {
+  background:#ccc;
+}
+
+.widgetInfo {
+  margin:0;
+}
+
+.closeButton {
+  align-self: flex-end;
+  font-size: 1.5rem;
+  text-decoration: none;
+}
+
+.closeButton:hover {
+  color:red;
+}
+
+#openForm{
+  color:black;
+  text-decoration: none;
+}
+
+#openForm:hover{
+  color:blue;
+}
+
+.widgetFooter{
+  align-self: center;
+  margin-top:auto;
+  padding: 1rem;
+}
+
+#overlay{
+  position:absolute;
+  display:none;
+  height:100%;
+  width:100%;
+  z-index:2;
+  background-color:grey;
+  opacity: 25%;
+}
+
+#visitHeader {
+  display:none;
+  flex-direction: row;
+  align-items: center;
+}
+
+#finnRank{
+  margin:0 .25rem 0 0;
+}
+
+#visitDate {
+  margin: 0 0 0 auto;
+}
+
+.rankStar {
+  color: orange;
+}
+
+@media screen and (max-width: 800px) {
+  #flexContainer{
+    flex-direction: column;
+  }
+
+  .formContainer{
+    width:70%;
+    font-size: smaller;
+  }
+
+  .widgetFooter{
+    margin:0;
+  }
+
+  #sidebar{
+    flex:4;
+    font-size:smaller;
+    overflow:hidden;
+  }
+
+  #sidebarContent{
+    overflow:auto;
+    margin-bottom:.75rem;
+    margin-top:.75rem;
+  }
+
+  .headerItem{
+    margin:.25rem;
+  }
+
+}
+
+@media screen and (orientation: landscape) and (max-width: 800px){
+  #flexContainer{
+    flex-direction: row;
+  }
+}

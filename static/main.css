@@ -36,20 +36,6 @@ body {
   flex-direction:column;
 }
 
-.headerItem{
-  align-self: center;
-  margin:.5rem;
-}
-
-#sidebarContent {
-  display:flex;
-  flex-direction: column;
-}
-
-#visitInfo p {
-  margin:0rem;
-}
-
 .sidebarItem {
   margin:.5rem;
 }
@@ -66,10 +52,6 @@ body {
   color:blue;
 }
 
-.queryImg {
-  max-width:100%;
-}
-
 #sidebarFooter{
   margin-top: auto;
   align-self: center;
@@ -78,6 +60,11 @@ body {
 #sidebarFooter p {
   margin:0;
   padding:0;
+}
+
+#sidebarContent {
+  display:flex;
+  flex-direction: column;
 }
 
 .formContainer {
@@ -111,44 +98,6 @@ body {
   font-weight: bold;
 }
 
-.finnMapBtn {
-  display: inline-block;
-  border: 1px solid black;
-  padding: .75rem 1.5rem;
-  margin: .5rem 0 .5rem 0;
-  text-decoration: none;
-  background: #ccc;
-  color: #222;
-  font-family: inherit;
-  font-weight: bold;
-  font-size: inherit;
-  line-height: 1;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-}
-
-.finnMapBtn:hover {
-  background:#bdbdbd;
-}
-
-.finnMapBtn:active {
-  background:#ccc;
-}
-
-.widgetInfo {
-  margin:0;
-}
-
-.closeButton {
-  align-self: flex-end;
-  font-size: 1.5rem;
-  text-decoration: none;
-}
-
-.closeButton:hover {
-  color:red;
-}
-
 #openForm{
   color:black;
   text-decoration: none;
@@ -156,12 +105,6 @@ body {
 
 #openForm:hover{
   color:blue;
-}
-
-.widgetFooter{
-  align-self: center;
-  margin-top:auto;
-  padding: 1rem;
 }
 
 #overlay{
@@ -180,16 +123,92 @@ body {
   align-items: center;
 }
 
-#finnRank{
-  margin:0 .25rem 0 0;
+.headerItem{
+  align-self: center;
+  margin:.5rem;
 }
 
 #visitDate {
   margin: 0 0 0 auto;
 }
 
+#visitInfo p {
+  margin:0rem;
+}
+
+#finnRank{
+  margin:0 .25rem 0 0;
+}
+
 .rankStar {
   color: orange;
+}
+
+.closeButton {
+  align-self: flex-end;
+  font-size: 1.5rem;
+  text-decoration: none;
+}
+
+.closeButton:hover {
+  color:red;
+}
+
+.finnMapBtn:hover {
+  background:#bdbdbd;
+}
+
+.finnMapBtn:active {
+  background:#ccc;
+}
+
+.finnMapBtn {
+  display: inline-block;
+  border: 1px solid black;
+  padding: .75rem 1.5rem;
+  margin: .5rem 0 .5rem 0;
+  text-decoration: none;
+  background: #ccc;
+  color: #222;
+  font-family: inherit;
+  font-weight: bold;
+  font-size: inherit;
+  line-height: 1;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.widgetInfo {
+  margin:0;
+}
+
+.widgetFooter{
+  align-self: center;
+  margin-top:auto;
+  padding: 1rem;
+}
+
+.queryImg {
+  max-width:100%;
+}
+
+.eventMsg{
+  position:absolute;
+  display:none;
+  width:6rem;
+  height:4rem;
+  background:white;
+  opacity:1;
+}
+
+.elementToFadeInAndOut {
+    animation: fadeInOut 4s linear forwards;
+}
+
+@keyframes fadeInOut {
+ 0% { opacity:0; }
+ 50% { opacity:1; }
+ 100% { opacity:0; }
 }
 
 @media screen and (max-width: 800px) {

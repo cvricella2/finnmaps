@@ -29,7 +29,11 @@
           <p><strong> Want to stay up to date with Finn? <a id="openForm" href="#">Click Here</a></strong></p>
         </div>
       </div>
-      <div id="viewDiv"></div>
+      <div id="viewDiv">
+        <div class="eventMsg" id="addPlaceMsg">
+          <p>Test</p>
+        </div>
+      </div>
       <div id="overlay"></div>
     </div>
     <form name = "submitForm" method="post" action="/">

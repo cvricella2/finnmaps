@@ -86,11 +86,11 @@ def form_handler():
 @app.route('/addplace',method="POST")
 def add_place():
     jres = request.json
-    geom = jres['geom']
+    coord = jres['coord']
     name = jres['name']
     type = jres['type']
-    print(str(geom) + "," + name + "," + type)
-    add_feature(geom,place_layer,name,type)
+    print(str(coord) + "," + name + "," + type)
+    add_feature(coord,place_layer,name,type)
 
 
 if __name__ == '__main__':

@@ -10,14 +10,58 @@ require([
   "esri/Map",
   "esri/layers/FeatureLayer",
   "esri/popup/RelatedRecordsInfo",
-  "esri/widgets/Editor",
   "esri/widgets/Expand",
-  "esri/request",
-  "esri/widgets/Legend"
+  "esri/widgets/Legend",
+  "esri/widgets/Home"
 ],
-  function(MapView,Map,FeatureLayer,RelatedRecordsInfo,Editor,Expand,esriRequest,Legend) {
+  function(MapView,Map,FeatureLayer,RelatedRecordsInfo,Expand,Legend,Home) {
 
-    /** Clears the sidebar if anywhere different is clicked on the map from the last click */
+    // Variables in global scope used throughout Application-----------------------
+    let addPlace = false;
+    let highlight;
+
+    const sidebar = document.getElementById("sidebar");
+    const headerTitle = document.getElementById("headerTitle");
+    const headerSubTitle = document.getElementById('headerSubTitle');
+    const visitInfo = document.getElementById("visitInfo");
+    const visitAttachments = document.getElementById("visitAttachments");
+    const nextVisitButton = document.getElementById("nextVisit");
+    const nextAttachButton = document.getElementById("nextAttach");
+    const visitHeader = document.getElementById("visitHeader");
+    const placeInfo = document.getElementById("placeInfo");
+    const signupWidget = document.getElementById("signupWidget");
+    const submitForm = document.getElementById("submitFormBtn");
+    const form = document.getElementsByName("submitForm")[0];
+    const openForm = document.getElementById("openForm");
+    const closeForm = document.getElementById("closeForm");
+    const overlay = document.getElementById("overlay");
+    const number_field = document.getElementById("phone_number");
+    const editWidget = document.getElementById("editWidget");
+    const editWidgetBtn = document.getElementById("editWidgetBtn");
+    const closeEditWidget = document.getElementById("closeEditWidget");
+    const addPlaceMsg = document.getElementById("addPlaceMsg");
+    const editWidgetExpand = document.createElement("aside");
+    const visitDate = document.createElement("span");
+    const noImgVid = document.createElement("p");
+    const noParagraph = document.createElement("p");
+    const rankText = document.createElement("span");
+
+    editWidgetExpand.id = "editWidgetContainer";
+    editWidgetExpand.className = "esri-icon-map-pin esri-widget--button";
+    editWidgetExpand.setAttribute("title", "Add Places For Finn To Visit");
+    noImgVid.id = "noImgVid";
+    visitDate.id = "visitDate";
+    rankText.id = "finnRank";
+    rankText.innerHTML = "Finn Ranking: ";
+    noParagraph.innerHTML = "Finn Didin't Record Any Information" +
+                            "Yet About This Visit!";
+    noImgVid.innerHTML = "Finn Didin't Take Any Photos or Videos" +
+                         "During This Visit!";
+
+// Define functions------------------------------------------------------------
+
+    /** Clears the sidebar if anywhere different is clicked on the map from
+    the last click */
      function clearSideBar() {
        visitAttachments.innerHTML = " ";
        visitInfo.innerHTML = " ";
@@ -233,7 +277,7 @@ require([
         });
        };
 
-// Set up map and view------------------------------------------------------------------------------------------------------
+// Set up map and view---------------------------------------------------------
   var map = new Map({
     basemap:"osm"
   });
@@ -245,8 +289,8 @@ require([
     zoom:9
   });
 
-  const root_url = "https://services2.arcgis.com/O48sbyo4drQXsscH/arcgis/rest/services/Finn_Maps_HFS_Public/FeatureServer"
-
+  const root_url = "https://services2.arcgis.com/O48sbyo4drQXsscH/arcgis/rest/" +
+                   "services/Finn_Maps_HFS_Public/FeatureServer";
   let finnPlaces = new FeatureLayer({
     url:`${root_url}/0`
   });
@@ -254,13 +298,6 @@ require([
     url:`${root_url}/1`
   });
   finnPlaces.outFields = ["*"]
-
-  const editWidget2 = document.createElement("aside");
-  editWidget2.id = "editWidgetContainer";
-  editWidget2.className = " esri-icon-map-pin esri-widget--button";
-  // editWidget2.style.padding = "7px 15px 5px";
-
-  view.ui.add(editWidget2, "bottom-right");
 
   const legend = new Legend({
     view: view,
@@ -270,67 +307,26 @@ require([
     }]
   });
 
+  const homeWidget = new Home({
+    view: view
+  });
+
   const legendExpand = new Expand({
     expandIconClass: "esri-icon-key",
     view: view,
     content: legend,
     mode:"auto",
-    expandTooltip:"View Map View",
+    expandTooltip:"Open Map Key",
     collapseTooltip:"Close Map Key"
   });
 
-  const test = new Expand({
-    expandIconClass: "esri-icon-key",
-    view: view,
-    content: legend,
-    mode:"auto",
-    expandTooltip:"View Map View",
-    collapseTooltip:"Close Map Key"
-  });
-
-
+// Add stuff to the map and view
+  view.ui.add(editWidgetExpand, "bottom-right");
   view.ui.add(legendExpand, "top-right");
-
+  view.ui.add(homeWidget,"bottom-left");
   map.add(finnPlaces);
 
-
-// Variables in global scope used throughout Application----------------------------------------------------------------------
-let relatedData = {};
-let addPlace = false;
-let highlight;
-
-const sidebar = document.getElementById("sidebar");
-const headerTitle = document.getElementById("headerTitle");
-const headerSubTitle = document.getElementById('headerSubTitle');
-const visitInfo = document.getElementById("visitInfo");
-const visitAttachments = document.getElementById("visitAttachments");
-const nextVisitButton = document.getElementById("nextVisit");
-const nextAttachButton = document.getElementById("nextAttach");
-const visitHeader = document.getElementById("visitHeader");
-const placeInfo = document.getElementById("placeInfo");
-const visitDate = document.createElement("span");
-const noImgVid = document.createElement("p");
-const noParagraph = document.createElement("p");
-const rankText = document.createElement("span")
-const signupWidget = document.getElementById("signupWidget");
-const submitForm = document.getElementById("submitFormBtn");
-const form = document.getElementsByName("submitForm")[0];
-const openForm = document.getElementById("openForm");
-const closeForm = document.getElementById("closeForm");
-const overlay = document.getElementById("overlay");
-const number_field = document.getElementById("phone_number");
-const editWidget = document.getElementById("editWidget");
-const editWidgetBtn = document.getElementById("editWidgetBtn");
-const closeEditWidget = document.getElementById("closeEditWidget");
-
-noImgVid.id = "noImgVid";
-visitDate.id = "visitDate";
-rankText.id = "finnRank";
-rankText.innerHTML = "Finn Ranking: "
-noParagraph.innerHTML = "Finn Didin't Record Any Information Yet About This Visit!"
-noImgVid.innerHTML = "Finn Didin't Take Any Photos or Videos During This Visit!"
-
-// All the DOM events are defined below------------------------------------------------------------------------------------------
+// All the DOM events are defined below----------------------------------------
 
 // Below are all DOM events for the sidebar
  view.on("click", function (event) {
@@ -383,7 +379,7 @@ noImgVid.innerHTML = "Finn Didin't Take Any Photos or Videos During This Visit!"
   });
 
 // Below is all DOM events for the editing widget
-  editWidget2.addEventListener("click",function(){
+  editWidgetExpand.addEventListener("click",function(){
     editWidget.style.display = "flex";
     overlay.style.display= "block";
   });
@@ -395,16 +391,12 @@ noImgVid.innerHTML = "Finn Didin't Take Any Photos or Videos During This Visit!"
   })
 
   view.on("click",function(evt){
-    console.log(addPlace);
     if (addPlace === true) {
       let pt = view.toMap({ x: evt.x, y: evt.y })
-      let lon = pt.longitude
-      let lat = pt.latitude
-      let geom = [pt.longitude,pt.latitude]
-      console.log(lon,lat)
+      let coord = [pt.longitude,pt.latitude]
       let placeName = document.getElementById("placeName").value
       let placeType = document.getElementById("placeTypeList").value
-      let data = {'name':placeName,'type':placeType,'geom':geom}
+      let data = {'name':placeName,'type':placeType,'coord':coord}
       data = JSON.stringify(data);
       $.ajax({
         type:"POST",
@@ -413,12 +405,42 @@ noImgVid.innerHTML = "Finn Didin't Take Any Photos or Videos During This Visit!"
         contentType:"application/json",
         dataType:"json",
         complete: function(data){
-          setTimeout(function(){finnPlaces.refresh()},2000)
+          setTimeout(function(){
+            finnPlaces.refresh();
+            view.goTo({
+              target:coord,
+              zoom: view.zoom+2
+            });
+            let sidebarWidth = document.getElementById("sidebar").offsetWidth
+            let sidebarHeight = document.getElementById("sidebar").offsetHeight
+            let flexContainer = document.getElementById("flexContainer")
+            let flexDirection = window.getComputedStyle(flexContainer).getPropertyValue("flex-direction")
+            let xOffset = 0;
+            let yOffset = 0;
+            if (flexDirection==="row"){
+              console.log("Row")
+              xOffset = sidebarWidth
+            } else {
+              console.log("Column")
+              yOffset = sidebarHeight
+            }
+            addPlaceMsg.style.left = `${evt.x + xOffset}px`;
+            addPlaceMsg.style.top = `${evt.y + yOffset}px`;
+            addPlaceMsg.classList.add("elementToFadeInAndOut");
+            addPlaceMsg.style.display = "block";
+            setTimeout(function(){
+              addPlaceMsg.classList.remove("elementToFadeInAndOut");
+              addPlaceMsg.style.display="none";
+            }, 4000);
+          },1000)
         }
       })
     }
     addPlace = false;
   });
+
+  onclick = function(e){console.log("mouse location:", e.clientX, e.clientY)}
+
 
   closeEditWidget.addEventListener("click",function(){
     editWidget.style.display = "none";

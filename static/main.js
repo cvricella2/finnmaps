@@ -9,18 +9,18 @@ require([
   "esri/views/MapView",
   "esri/Map",
   "esri/layers/FeatureLayer",
-  "esri/popup/RelatedRecordsInfo",
   "esri/widgets/Expand",
   "esri/widgets/Legend",
-  "esri/widgets/Home"
+  "esri/widgets/Home",
+  "esri/core/watchUtils"
 ],
-  function(MapView,Map,FeatureLayer,RelatedRecordsInfo,Expand,Legend,Home) {
+  function(MapView,Map,FeatureLayer,Expand,Legend,Home,watchUtils) {
 
     // Variables in global scope used throughout Application-----------------------
     let addPlace = false;
+    let deletePlace = false;
     let highlight;
 
-    const sidebar = document.getElementById("sidebar");
     const headerTitle = document.getElementById("headerTitle");
     const headerSubTitle = document.getElementById('headerSubTitle');
     const visitInfo = document.getElementById("visitInfo");
@@ -38,8 +38,8 @@ require([
     const number_field = document.getElementById("phone_number");
     const editWidget = document.getElementById("editWidget");
     const editWidgetBtn = document.getElementById("editWidgetBtn");
+    const deleteBtn = document.getElementById("deleteBtn");
     const closeEditWidget = document.getElementById("closeEditWidget");
-    const addPlaceMsg = document.getElementById("addPlaceMsg");
     const editWidgetExpand = document.createElement("aside");
     const visitDate = document.createElement("span");
     const noImgVid = document.createElement("p");
@@ -49,13 +49,14 @@ require([
     editWidgetExpand.id = "editWidgetContainer";
     editWidgetExpand.className = "esri-icon-map-pin esri-widget--button";
     editWidgetExpand.setAttribute("title", "Add Places For Finn To Visit");
-    noImgVid.id = "noImgVid";
+    noImgVid.className = "sidebarNoInfo";
+    noParagraph.className = "sidebarNoInfo";
     visitDate.id = "visitDate";
     rankText.id = "finnRank";
     rankText.innerHTML = "Finn Ranking: ";
-    noParagraph.innerHTML = "Finn Didin't Record Any Information" +
+    noParagraph.innerHTML = "Finn Didin't Record Any Information " +
                             "Yet About This Visit!";
-    noImgVid.innerHTML = "Finn Didin't Take Any Photos or Videos" +
+    noImgVid.innerHTML = "Finn Didin't Take Any Photos or Videos " +
                          "During This Visit!";
 
 // Define functions------------------------------------------------------------
@@ -193,7 +194,8 @@ require([
            if (highlight) {
              highlight.remove();
           }
-           highlight = layerView.highlight(graphic);
+         console.log("Highlighting")
+         highlight = layerView.highlight(graphic);
          });
          headerTitle.innerHTML = graphic.attributes.name;
          placeInfo.innerHTML = graphic.attributes.comment;
@@ -276,6 +278,33 @@ require([
           console.log(error);
         });
        };
+  
+  /**  All the stuff that should be done after an edit is made 
+   * @param msg Alert message for user after edit.
+  */
+  function editComplete(msg,coord){
+    deletePlace = false;
+    addPlace = false;
+    if (highlight) {
+      highlight.remove();
+    }
+    let div = document.createElement("div");
+    div.className = "eventMsg";
+    div.classList.add("elementToFadeInAndOut");
+    div.classList.add("esri-component");
+    div.classList.add("esri-widget");
+    div.innerHTML=`<p> ${msg} </p>`;
+    let innerView = document.getElementsByClassName("esri-ui-inner-container")[0];
+    innerView.append(div);
+    setTimeout(function(){
+      innerView.removeChild(div);
+      finnPlaces.refresh();
+      view.goTo({
+        target:coord,
+        zoom:view.zoom+2
+      })
+    }, 2000);
+  }
 
 // Set up map and view---------------------------------------------------------
   var map = new Map({
@@ -330,8 +359,11 @@ require([
 
 // Below are all DOM events for the sidebar
  view.on("click", function (event) {
-   clearSideBar()
-   createSidebar(event);
+   if (deletePlace === false){
+     console.log(deletePlace);
+     clearSideBar()
+     createSidebar(event);
+   }
  });
 
  nextVisitButton.addEventListener("click", function(event){
@@ -390,12 +422,53 @@ require([
     overlay.style.display= "none";
   })
 
+  deleteBtn.addEventListener("click",function(){
+    deletePlace = true;
+    editWidget.style.display = "none";
+    overlay.style.display= "none";
+  })
+
+  watchUtils.whenTrue(view, "navigating", function () {
+    console.log("Navigating");
+    finnPlaces.refresh();
+  });
+
   view.on("click",function(evt){
+    let pt = view.toMap({ x: evt.x, y: evt.y })
+    var coord = [pt.longitude,pt.latitude]
+    console.log(coord)
+    if (deletePlace === true) {
+      view.hitTest(evt).then(function (response) {
+        let result = response.results;
+        if (result === 0){
+          console.log("Nothing to delete here.")
+          return 
+        }
+        let attributes = response.results[0].graphic.attributes;
+        let oid = attributes.OBJECTID;
+        let placeName = attributes.name;
+        let deleteAttributes = [oid,placeName]
+        return deleteAttributes
+      }).then(function(deleteAttributes){
+        let data = {'oid':deleteAttributes[0]}
+        let msg = `${deleteAttributes[1]} was deleted! 🐶`
+        data = JSON.stringify(data);
+        $.ajax({
+          type:"POST",
+          url: "/deleteplace",
+          data:data,
+          contentType:"application/json",
+          complete:editComplete(msg,coord)
+        })
+      }).catch(function(error){
+        console.log(error);
+      })
+    }
+
     if (addPlace === true) {
-      let pt = view.toMap({ x: evt.x, y: evt.y })
-      let coord = [pt.longitude,pt.latitude]
       let placeName = document.getElementById("placeName").value
       let placeType = document.getElementById("placeTypeList").value
+      let msg = `Added ${placeName} 🐶`;
       let data = {'name':placeName,'type':placeType,'coord':coord}
       data = JSON.stringify(data);
       $.ajax({
@@ -404,43 +477,10 @@ require([
         data:data,
         contentType:"application/json",
         dataType:"json",
-        complete: function(data){
-          setTimeout(function(){
-            finnPlaces.refresh();
-            view.goTo({
-              target:coord,
-              zoom: view.zoom+2
-            });
-            let sidebarWidth = document.getElementById("sidebar").offsetWidth
-            let sidebarHeight = document.getElementById("sidebar").offsetHeight
-            let flexContainer = document.getElementById("flexContainer")
-            let flexDirection = window.getComputedStyle(flexContainer).getPropertyValue("flex-direction")
-            let xOffset = 0;
-            let yOffset = 0;
-            if (flexDirection==="row"){
-              console.log("Row")
-              xOffset = sidebarWidth
-            } else {
-              console.log("Column")
-              yOffset = sidebarHeight
-            }
-            addPlaceMsg.style.left = `${evt.x + xOffset}px`;
-            addPlaceMsg.style.top = `${evt.y + yOffset}px`;
-            addPlaceMsg.classList.add("elementToFadeInAndOut");
-            addPlaceMsg.style.display = "block";
-            setTimeout(function(){
-              addPlaceMsg.classList.remove("elementToFadeInAndOut");
-              addPlaceMsg.style.display="none";
-            }, 4000);
-          },1000)
-        }
+        complete: editComplete(msg,coord)
       })
     }
-    addPlace = false;
   });
-
-  onclick = function(e){console.log("mouse location:", e.clientX, e.clientY)}
-
 
   closeEditWidget.addEventListener("click",function(){
     editWidget.style.display = "none";

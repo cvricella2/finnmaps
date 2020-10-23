@@ -29,11 +29,7 @@
           <p><strong> Want to stay up to date with Finn? <a id="openForm" href="#">Click Here</a></strong></p>
         </div>
       </div>
-      <div id="viewDiv">
-        <div class="eventMsg" id="addPlaceMsg">
-          <p>Test</p>
-        </div>
-      </div>
+      <div id="viewDiv"></div>
       <div id="overlay"></div>
     </div>
     <form name = "submitForm" method="post" action="/">
@@ -80,6 +76,7 @@
          <option value="11">Other</option>
         </select>
         <button type ="button" class="finnMapBtn" id="editWidgetBtn">Add Place</button>
+        <button type ="button" class="finnMapBtn" id="deleteBtn">Delete Place</button>
         <p class="widgetInfo" id="editWidgetInfo">
           Fill out the above fields, then hit "Add Place". After submission you can click anywhere
           on the map to add the location of the place you think Finn should visit. The map will automatically update,

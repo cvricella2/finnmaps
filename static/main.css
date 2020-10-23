@@ -40,6 +40,10 @@ body {
   margin:.5rem;
 }
 
+.sidebarNoInfo {
+  text-align: center;
+}
+
 .sidebarButton {
   text-align: justify;
   font-style: bold;
@@ -193,16 +197,17 @@ body {
 }
 
 .eventMsg{
-  position:absolute;
-  display:none;
-  width:6rem;
-  height:4rem;
-  background:white;
+  position: absolute;
+  left: 50%;
+  padding:.5rem;
+  top:10%;
+  font-weight: bold;
+  transform: translate(-50%, -50%);
   opacity:1;
 }
 
 .elementToFadeInAndOut {
-    animation: fadeInOut 4s linear forwards;
+    animation: fadeInOut 3s linear forwards;
 }
 
 @keyframes fadeInOut {

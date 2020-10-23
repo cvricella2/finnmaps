@@ -42,16 +42,36 @@ def add_feature(coords,fl,placename,placetype):
     except Exception as e:
         print(e)
 
-app = Bottle()
+
+def delete_feature(oid,fl):
+    """ Deletes a feature using the arcgis for python api"""
+    try:
+        resp = fl.edit_features(deletes=[oid])
+        print(resp)
+    except Exception as e:
+        print(e)
+
+
+def init_gis(username,password,portal_url,hfs_id):
+    """Connect to the GIS, get the relevant HFS, return needed feature layer"""
+    print("Connecting to GIS portal")
+    gis = GIS(portal_url,username,password)
+    print("Finished Connecting...Connecting to HFS")
+    hfs = gis.content.get(hfs_id)
+    fl = hfs.layers[0]
+    return fl
+
+def add_user(db_file,sql):
+    db = sqlite3.connect(db_file)
+    cur = db.cursor()
+    cur.execute(sql)
+    db.commit()
+    db.close()
+    print("User Added")
+
 wdir = os.path.dirname(__file__)
-db = sqlite3.connect("finnmaps.db")
-cur = db.cursor()
-username = "cvgeospatial"
-password = "@phineas16S"
-portal_url = "https://cvgeospatial.maps.arcgis.com"
-gis = GIS(portal_url,username,password)
-finnmaps_hfs = gis.content.get("704707d94dd64cb48045b1b7d96bdf26")
-place_layer = finnmaps_hfs.layers[0]
+place_layer = init_gis("cvgeospatial","@phineas16S","https://cvgeospatial.maps.arcgis.com","704707d94dd64cb48045b1b7d96bdf26")
+app = Bottle()
 
 @app.route('/static/<filename:path>')
 def send_css(filename):
@@ -77,9 +97,7 @@ def form_handler():
     # to sign up must atleast give a name or email.
     sql = f"insert into user_info values ('{name}','{valid_email}','{valid_number}')"
     if valid_email or valid_number:
-        print(sql)
-        cur.execute(sql)
-        db.commit()
+        add_user("finnmaps.db",sql)
     else:
         print("Somethings not right, try again")
 
@@ -92,7 +110,13 @@ def add_place():
     print(str(coord) + "," + name + "," + type)
     add_feature(coord,place_layer,name,type)
 
+@app.route('/deleteplace',method="POST")
+def delete_place():
+    jres = request.json
+    oid = jres['oid']
+    delete_feature(oid,place_layer)
+
+
 
 if __name__ == '__main__':
-    print(wdir)
-    app.run(debug=True,reloader=True)
+    app.run(debug=True,reloader=False)

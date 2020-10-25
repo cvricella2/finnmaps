@@ -81,7 +81,7 @@ form{
   background-color: white;
   position:absolute;
   z-index: 3;
-  width:35%;
+  width:25%;
   height:50%;
   left: 50%;
   top:50%;
@@ -105,6 +105,7 @@ form{
   -moz-appearance: none;
   -webkit-appearance: none;
   font-family: inherit;
+  text-indent: -2px;
   background-color:#f1f1f1;
   background-image: url("data:image/svg+xml,%3Csvg width%3D%2732%27%20height%3D%2732%27%20viewBox%3D%270%200%2032%2032%27%20xmlns%3D%27http://www.w3.org/2000/svg%27%3E%3Cpath%20d%3D%27M11%2013l5%205.833L21%2013z%27%20fill%3D%27%236e6e6e%27%20fill-rule%3D%27nonzero%27/%3E%3C/svg%3E");
   background-repeat: no-repeat;

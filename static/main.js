@@ -30,12 +30,13 @@ require([
     const visitHeader = document.getElementById("visitHeader");
     const placeInfo = document.getElementById("placeInfo");
     const signupWidget = document.getElementById("signupWidget");
-    const submitForm = document.getElementById("submitFormBtn");
-    const form = document.getElementsByName("submitForm")[0];
+    const submitFormBtn = document.getElementById("submitFormBtn");
+    const submitForm = document.getElementsByName("submitForm")[0];
     const openForm = document.getElementById("openForm");
     const closeForm = document.getElementById("closeForm");
     const overlay = document.getElementById("overlay");
     const number_field = document.getElementById("phone_number");
+    const editForm = document.getElementsByName("editForm")[0];
     const editWidget = document.getElementById("editWidget");
     const editWidgetBtn = document.getElementById("editWidgetBtn");
     const deleteBtn = document.getElementById("deleteBtn");
@@ -58,6 +59,12 @@ require([
                             "Yet About This Visit!";
     noImgVid.innerHTML = "Finn Didin't Take Any Photos or Videos " +
                          "During This Visit!";
+    
+    // Reset all the forms when the page shows
+    window.addEventListener("pageshow", function(){
+      let forms = document.getElementsByTagName('form');
+      for (form of forms) {form.reset()}
+  });
 
 // Define functions------------------------------------------------------------
 
@@ -387,7 +394,7 @@ require([
     overlay.style.display= "block";
   });
 
-  submitForm.addEventListener("click", function(event){
+  submitFormBtn.addEventListener("click", function(event){
     let name = document.getElementById("name").value
     let email = document.getElementById("email").value
     let phone_number = document.getElementById("phone_number").value
@@ -400,7 +407,7 @@ require([
       contentType:"application/json",
       dataType:"json"
     })
-    form.reset();
+    submitForm.reset();
     signupWidget.style.display = "none";
     overlay.style.display = "none";
   });
@@ -408,6 +415,7 @@ require([
   closeForm.addEventListener("click", function(event){
     signupWidget.style.display = "none";
     overlay.style.display = "none";
+    submitForm.reset();
   });
 
 // Below is all DOM events for the editing widget
@@ -420,16 +428,17 @@ require([
     addPlace = true;
     editWidget.style.display = "none";
     overlay.style.display= "none";
+    editForm.reset();
   })
 
   deleteBtn.addEventListener("click",function(){
     deletePlace = true;
     editWidget.style.display = "none";
     overlay.style.display= "none";
+    editForm.reset();
   })
 
   watchUtils.whenTrue(view, "navigating", function () {
-    console.log("Navigating");
     finnPlaces.refresh();
   });
 
@@ -485,6 +494,7 @@ require([
   closeEditWidget.addEventListener("click",function(){
     editWidget.style.display = "none";
     overlay.style.display= "none";
+    editForm.reset();
   });
 
 });

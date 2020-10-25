@@ -4,9 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Finn Maps</title>
-    <link rel="stylesheet"  type="text/css" href="https://js.arcgis.com/4.16/esri/themes/light/main.css"></link>
+    <link rel="stylesheet"  type="text/css" href="https://js.arcgis.com/4.17/esri/themes/light/main.css"></link>
     <link rel="stylesheet"  type="text/css" href="/static/main.css?version=1.0"></link>
-    <script type="text/javascript" src="https://js.arcgis.com/4.16/"></script>
+    <script type="text/javascript" src="https://js.arcgis.com/4.17/"></script>
     <script type="text/javascript" src="/static/main.js?version=1.0"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   </head>
@@ -62,7 +62,8 @@
         <label for="placename" class="formLabel">Place Name</label>
         <input type="text" placeholder = "Enter Name of The Place" name="placename" class="formField" id="placeName">
         <label for="placeTypeList" class="formLabel">Place Type</label>
-        <select id="placeTypeList" name="placeTypeList">
+        <select id="placeTypeList" name="placeTypeList" class="dropdown">
+         <option value=""selected> </option>
          <option value="1">Village Park</option>
          <option value="2">Town Park</option>
          <option value="3">County Park</option>

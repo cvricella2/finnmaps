@@ -71,6 +71,10 @@ body {
   flex-direction: column;
 }
 
+form{
+  font-size:1rem;
+}
+
 .formContainer {
   display:none;
   flex-direction: column;
@@ -97,6 +101,18 @@ body {
   border: none;
 }
 
+.dropdown {
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  font-family: inherit;
+  background-color:#f1f1f1;
+  background-image: url("data:image/svg+xml,%3Csvg width%3D%2732%27%20height%3D%2732%27%20viewBox%3D%270%200%2032%2032%27%20xmlns%3D%27http://www.w3.org/2000/svg%27%3E%3Cpath%20d%3D%27M11%2013l5%205.833L21%2013z%27%20fill%3D%27%236e6e6e%27%20fill-rule%3D%27nonzero%27/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right center;
+  border:none;
+  padding: .5rem 0rem .5rem .5rem;
+}
+
 .formLabel{
   margin: .5rem 0 .5rem 0;
   font-weight: bold;
@@ -109,6 +125,39 @@ body {
 
 #openForm:hover{
   color:blue;
+}
+
+.finnMapBtn {
+  display: inline-block;
+  border: .05rem solid black;
+  padding: .75rem 1.5rem;
+  margin: .5rem 0 .5rem 0;
+  text-decoration: none;
+  background: #ccc;
+  color: #222;
+  font-family: inherit;
+  font-weight: bold;
+  line-height: 1;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.finnMapBtn:hover {
+  background:#bdbdbd;
+}
+
+.finnMapBtn:active {
+  background:#ccc;
+}
+
+.widgetInfo {
+  margin:0;
+}
+
+.widgetFooter{
+  align-self: center;
+  margin-top:auto;
+  padding: 1rem;
 }
 
 #overlay{
@@ -158,40 +207,6 @@ body {
   color:red;
 }
 
-.finnMapBtn:hover {
-  background:#bdbdbd;
-}
-
-.finnMapBtn:active {
-  background:#ccc;
-}
-
-.finnMapBtn {
-  display: inline-block;
-  border: 1px solid black;
-  padding: .75rem 1.5rem;
-  margin: .5rem 0 .5rem 0;
-  text-decoration: none;
-  background: #ccc;
-  color: #222;
-  font-family: inherit;
-  font-weight: bold;
-  font-size: inherit;
-  line-height: 1;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-}
-
-.widgetInfo {
-  margin:0;
-}
-
-.widgetFooter{
-  align-self: center;
-  margin-top:auto;
-  padding: 1rem;
-}
-
 .queryImg {
   max-width:100%;
 }
@@ -221,9 +236,12 @@ body {
     flex-direction: column;
   }
 
+  form {
+    font-size:smaller;
+  }
+
   .formContainer{
     width:70%;
-    font-size: smaller;
   }
 
   .widgetFooter{
@@ -251,5 +269,9 @@ body {
 @media screen and (orientation: landscape) and (max-width: 800px){
   #flexContainer{
     flex-direction: row;
+  }
+
+  #sidebar{
+    flex:3;
   }
 }

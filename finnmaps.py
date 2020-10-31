@@ -50,8 +50,6 @@ def add_feature(coords,fl,placename,placetype):
         geom=geometry.Point(coords)
         feature = features.Feature(geometry=geom,
                                    attributes={'name':placename,'type':placetype})
-        adds = {{"geom":{"x":coords[0],"y":[coords[1]}},
-        ]}
         resp = fl.edit_features(adds=[feature])
         print(resp)
     except Exception as e:

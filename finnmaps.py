@@ -20,10 +20,6 @@ from email_validator import validate_email, EmailNotValidError
 from phonenumbers.phonenumberutil import NumberParseException
 from arcgis.gis import GIS
 from arcgis import geometry,features
-import sys
-
-sys.path.insert(0,'/var/www/html/finnmaps')
-
 
 def check_email(email):
     try:
@@ -132,4 +128,4 @@ def delete_place():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080)
+    app.run()

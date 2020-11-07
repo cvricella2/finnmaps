@@ -422,13 +422,13 @@ require([
   editWidgetExpand.addEventListener("click",function(){
     editWidget.style.display = "flex";
     overlay.style.display= "block";
+    editForm.reset();
   });
 
   editWidgetBtn.addEventListener("click",function(){
     addPlace = true;
     editWidget.style.display = "none";
     overlay.style.display= "none";
-    editForm.reset();
   })
 
   deleteBtn.addEventListener("click",function(){

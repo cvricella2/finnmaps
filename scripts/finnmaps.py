@@ -1,11 +1,12 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Created on Fri Oct  9 19:37:30 2020
 
 @author: cvric
 
-TO DO: 
-- Add tick numbers to sidebar heading 
+TO DO:
+- Add tick numbers to sidebar heading
 - Add empty stars to finn ranking for when it's less than 5 stars
 - Try to improve rendering of sidebar so content loads together
 - Figure out if possible to install arcgis on python anywhere; if not rewrite editing functions to use rest api instead.
@@ -15,11 +16,24 @@ TO DO:
 - Get app working on python anywhere; redirect domain to personal site
 """
 from bottle import Bottle,template,request,static_file
-import os,sqlite3,json,phonenumbers
+import os,sqlite3,json,phonenumbers,logging,sys
 from email_validator import validate_email, EmailNotValidError
 from phonenumbers.phonenumberutil import NumberParseException
+from configparser import ConfigParser
 from arcgis.gis import GIS
 from arcgis import geometry,features
+
+logger = logging.getLogger(__name__)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+sh = logging.StreamHandler(sys.stdout)
+sh.setLevel(logging.DEBUG)
+#logger.setLevel(logging.DEBUG)
+logger.addHandler(sh)
+logger.info("APP RUNNING")
+
+class SubmitError(Exception):
+    """ Raised when a user makes an invalid submission to a form """
+    pass
 
 def check_email(email):
     try:
@@ -36,9 +50,8 @@ def check_number(number,region=None):
         pn_format = phonenumbers.PhoneNumberFormat.NATIONAL
         nice_num = phonenumbers.format_number(pn_obj,pn_format)
         return nice_num
-    except Exception as e:
-        print(e)
-        return ''
+    except:
+        raise SubmitError("Failed to add number")
 
 
 def add_feature(coords,fl,placename,placetype):
@@ -48,8 +61,8 @@ def add_feature(coords,fl,placename,placetype):
                                    attributes={'name':placename,'type':placetype})
         resp = fl.edit_features(adds=[feature])
         print(resp)
-    except Exception as e:
-        print(e)
+    except:
+        raise SubmitError("Failed to Add Feature")
 
 
 def delete_feature(oid,fl):
@@ -61,13 +74,13 @@ def delete_feature(oid,fl):
         print(e)
 
 
-def init_gis(username,password,portal_url,hfs_id):
+def init_gis(username,password,portal_url,hfl_id):
     """Connect to the GIS, get the relevant HFS, return needed feature layer"""
-    print("Connecting to GIS portal")
+    logger.info("Connecting to GIS portal")
     gis = GIS(portal_url,username,password)
-    print("Finished Connecting...Connecting to HFS")
-    hfs = gis.content.get(hfs_id)
-    fl = hfs.layers[0]
+    logger.info("Finished Connecting...Connecting to HFL")
+    hfl = gis.content.get(hfl_id)
+    fl = hfl.layers[0]
     return fl
 
 def add_user(db_file,sql):
@@ -78,23 +91,33 @@ def add_user(db_file,sql):
     db.close()
     print("User Added")
 
-wdir = os.path.dirname(__file__)
-place_layer = init_gis("cvgeospatial","@phineas16S","https://cvgeospatial.maps.arcgis.com","704707d94dd64cb48045b1b7d96bdf26")
-app = Bottle()
 
-@app.route('/static/<filename:path>')
-def send_css(filename):
-    return static_file(filename, root=os.path.join(wdir,'static'))
+wdir = os.path.dirname(os.path.dirname(__file__))
+print(wdir)
+print(wdir)
+config_file = os.path.join(wdir,"config.ini")
+config = ConfigParser()
+config.read(config_file)
+agol_user = config.get("GIS_VAR","agol_user")
+agol_pw = config.get("GIS_VAR","agol_pw")
+agol_url = config.get("GIS_VAR","agol_url")
+finnmaps_hfl_id = config.get("GIS_VAR","hfl_id")
+place_layer = init_gis(agol_user,agol_pw,agol_url,finnmaps_hfl_id)
+application = Bottle()
 
-@app.route('/static/<filename:path>')
-def send_js(filename):
-    return static_file(filename, root=os.path.join(wdir,'static'))
+@application.route('/static/main.css')
+def send_css():
+    return static_file('main.css', root=os.path.join(wdir,'static'))
 
-@app.route('/')
-def serve_index():
-    return template("./views/index.tpl")
+@application.route('/static/main.js')
+def send_js():
+    return static_file('main.js', root=os.path.join(wdir,'static'))
 
-@app.route('/signupform',method="POST")
+@application.route('/')
+def send_index():
+    return template(os.path.join(wdir,"views/index.tpl"))
+
+@application.route('/signupform',method="POST")
 def form_handler():
     jres = request.json
     # Strip out whitespace to help validate submissions
@@ -110,7 +133,7 @@ def form_handler():
     else:
         print("Somethings not right, try again")
 
-@app.route('/addplace',method="POST")
+@application.route('/addplace',method="POST")
 def add_place():
     jres = request.json
     coord = jres['coord']
@@ -119,7 +142,7 @@ def add_place():
     print(str(coord) + "," + name + "," + type)
     add_feature(coord,place_layer,name,type)
 
-@app.route('/deleteplace',method="POST")
+@application.route('/deleteplace',method="POST")
 def delete_place():
     jres = request.json
     oid = jres['oid']
@@ -127,5 +150,6 @@ def delete_place():
 
 
 
+
 if __name__ == '__main__':
-    app.run()
+    application.run()

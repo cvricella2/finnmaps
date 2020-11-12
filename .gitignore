@@ -1,0 +1,5 @@
+finnmaps.code-workspace
+*.db
+config.ini
+venv/
+

@@ -402,7 +402,7 @@ require([
     data = JSON.stringify(data);
     $.ajax({
       type:"POST",
-      url: "/signupform",
+      url: "finnmaps/signupform",
       data:data,
       contentType:"application/json",
       dataType:"json"
@@ -464,7 +464,7 @@ require([
         data = JSON.stringify(data);
         $.ajax({
           type:"POST",
-          url: "/deleteplace",
+          url: "finnmaps/deleteplace",
           data:data,
           contentType:"application/json",
           complete:editComplete(msg,coord)
@@ -482,7 +482,7 @@ require([
       data = JSON.stringify(data);
       $.ajax({
         type:"POST",
-        url: "/addplace",
+        url: "finnmaps/addplace",
         data:data,
         contentType:"application/json",
         dataType:"json",

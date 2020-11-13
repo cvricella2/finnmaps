@@ -19,7 +19,6 @@ from bottle import Bottle,template,request,static_file
 import os,sqlite3,json,phonenumbers,logging,sys
 from email_validator import validate_email, EmailNotValidError
 from phonenumbers.phonenumberutil import NumberParseException
-from configparser import ConfigParser
 from arcgis.gis import GIS
 from arcgis import geometry,features
 
@@ -68,21 +67,17 @@ def add_feature(coords,fl,placename,placetype):
 def delete_feature(oid,fl):
     """ Deletes a feature using the arcgis for python api"""
     try:
-        logger.info("Deleting {} feature".format(str(oid)))
         resp = fl.edit_features(deletes=[oid])
-        logger.info(resp)
+        print(resp)
     except Exception as e:
         print(e)
 
 
-def init_gis(username,password,portal_url,hfl_id):
+def init_gis(username,password,portal_url,hfs_id):
     """Connect to the GIS, get the relevant HFS, return needed feature layer"""
     logger.info("Connecting to GIS portal")
     gis = GIS(portal_url,username,password)
     logger.info("Finished Connecting...Connecting to HFL")
-    hfl = gis.content.get(hfl_id)
-    fl = hfl.layers[0]
-    return fl
 
 def add_user(db_file,sql):
     db = sqlite3.connect(db_file)
@@ -92,16 +87,9 @@ def add_user(db_file,sql):
     db.close()
     print("User Added")
 
-
 wdir = os.path.dirname(os.path.dirname(__file__))
-config_file = os.path.join(wdir,"config.ini")
-config = ConfigParser()
-config.read(config_file)
-agol_user = config.get("GIS_VAR","agol_user")
-agol_pw = config.get("GIS_VAR","agol_pw")
-agol_url = config.get("GIS_VAR","agol_url")
-finnmaps_hfl_id = config.get("GIS_VAR","hfl_id")
-place_layer = init_gis(agol_user,agol_pw,agol_url,finnmaps_hfl_id)
+logger.info("*************WORKING DIR IS: {}*******************".format(wdir))
+place_layer = init_gis("cvgeospatial","@phineas16S","https://cvgeospatial.maps.arcgis.com","704707d94dd64cb48045b1b7d96bdf26")
 application = Bottle()
 
 @application.route('/static/main.css')
@@ -118,7 +106,6 @@ def send_index():
 
 @application.route('/signupform',method="POST")
 def form_handler():
-    fm_db = "/var/www/finnmaps/dbs/finnmaps.db"
     jres = request.json
     # Strip out whitespace to help validate submissions
     name,email,number = jres['name'],jres['email'],jres['phone_number']
@@ -129,7 +116,7 @@ def form_handler():
     # to sign up must atleast give a name or email.
     sql = f"insert into user_info values ('{name}','{valid_email}','{valid_number}')"
     if valid_email or valid_number:
-        add_user(fm_db,sql)
+        add_user("finnmaps.db",sql)
     else:
         print("Somethings not right, try again")
 
@@ -146,7 +133,6 @@ def add_place():
 def delete_place():
     jres = request.json
     oid = jres['oid']
-    logger.info("Delete Route Hit")
     delete_feature(oid,place_layer)
 
 
@@ -154,3 +140,4 @@ def delete_place():
 
 if __name__ == '__main__':
     application.run()
+

@@ -77,6 +77,7 @@
          <option value="11">Other</option>
         </select>
         <button type ="button" class="finnMapBtn" id="editWidgetBtn">Add Place</button>
+        <button type ="button" class="finnMapBtn" id="deleteBtn">Delete Place</button>
         <p class="widgetInfo" id="editWidgetInfo">
           Fill out the above fields, then hit "Add Place". After submission you can click anywhere
           on the map to add the location of the place you think Finn should visit. The map will automatically update,

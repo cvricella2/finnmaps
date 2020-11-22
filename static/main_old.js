@@ -39,7 +39,7 @@ require([
     const editForm = document.getElementsByName("editForm")[0];
     const editWidget = document.getElementById("editWidget");
     const editWidgetBtn = document.getElementById("editWidgetBtn");
-    //const deleteBtn = document.getElementById("deleteBtn");
+    const deleteBtn = document.getElementById("deleteBtn");
     const closeEditWidget = document.getElementById("closeEditWidget");
     const editWidgetExpand = document.createElement("aside");
     const visitDate = document.createElement("span");
@@ -290,7 +290,7 @@ require([
    * @param msg Alert message for user after edit.
   */
   function editComplete(msg,coord){
-    //deletePlace = false;
+    deletePlace = false;
     addPlace = false;
     if (highlight) {
       highlight.remove();
@@ -431,12 +431,12 @@ require([
     overlay.style.display= "none";
   })
 
-  //deleteBtn.addEventListener("click",function(){
-    //deletePlace = true;
-    //editWidget.style.display = "none";
-    //overlay.style.display= "none";
-    //editForm.reset();
-  //})
+  deleteBtn.addEventListener("click",function(){
+    deletePlace = true;
+    editWidget.style.display = "none";
+    overlay.style.display= "none";
+    editForm.reset();
+  })
 
   watchUtils.whenTrue(view, "navigating", function () {
     finnPlaces.refresh();
@@ -446,33 +446,33 @@ require([
     let pt = view.toMap({ x: evt.x, y: evt.y })
     var coord = [pt.longitude,pt.latitude]
     console.log(coord)
-    //if (deletePlace === true) {
-      //view.hitTest(evt).then(function (response) {
-        //let result = response.results;
-        //if (result === 0){
-          //console.log("Nothing to delete here.")
-          //return 
-        //}
-        //let attributes = response.results[0].graphic.attributes;
-        //let oid = attributes.OBJECTID;
-        //let placeName = attributes.name;
-        //let deleteAttributes = [oid,placeName]
-        //return deleteAttributes
-      //}).then(function(deleteAttributes){
-        //let data = {'oid':deleteAttributes[0]}
-        //let msg = `${deleteAttributes[1]} was deleted! 🐶`
-        //data = JSON.stringify(data);
-        //$.ajax({
-          //type:"POST",
-          //url: "finnmaps/deleteplace",
-          //data:data,
-          //contentType:"application/json",
-          //complete:editComplete(msg,coord)
-        //})
-      //}).catch(function(error){
-        //console.log(error);
-      //})
-    //}
+    if (deletePlace === true) {
+      view.hitTest(evt).then(function (response) {
+        let result = response.results;
+        if (result === 0){
+          console.log("Nothing to delete here.")
+          return 
+        }
+        let attributes = response.results[0].graphic.attributes;
+        let oid = attributes.OBJECTID;
+        let placeName = attributes.name;
+        let deleteAttributes = [oid,placeName]
+        return deleteAttributes
+      }).then(function(deleteAttributes){
+        let data = {'oid':deleteAttributes[0]}
+        let msg = `${deleteAttributes[1]} was deleted! 🐶`
+        data = JSON.stringify(data);
+        $.ajax({
+          type:"POST",
+          url: "finnmaps/deleteplace",
+          data:data,
+          contentType:"application/json",
+          complete:editComplete(msg,coord)
+        })
+      }).catch(function(error){
+        console.log(error);
+      })
+    }
 
     if (addPlace === true) {
       let placeName = document.getElementById("placeName").value

@@ -20,7 +20,7 @@ import os,sqlite3,json,phonenumbers,logging,sys
 from email_validator import validate_email, EmailNotValidError
 from phonenumbers.phonenumberutil import NumberParseException
 from configparser import ConfigParser
-from arcgis.gis import GIS
+from arcgis  import GIS
 from arcgis import geometry,features
 
 logger = logging.getLogger(__name__)
@@ -30,6 +30,9 @@ sh.setLevel(logging.DEBUG)
 logger.setLevel(logging.DEBUG)
 logger.addHandler(sh)
 logger.info("APP RUNNING")
+
+#sys.path.remove('/var/www/finnmaps/fmvenv/lib64/python3.6/site-packages/IPython/extensions')
+logger.info(sys.path)
 
 class SubmitError(Exception):
     """ Raised when a user makes an invalid submission to a form """
@@ -72,7 +75,7 @@ def delete_feature(oid,fl):
         resp = fl.edit_features(deletes=[oid])
         logger.info(resp)
     except Exception as e:
-        print(e)
+        logger.error("",exc_info=True)
 
 
 def init_gis(username,password,portal_url,hfl_id):
@@ -93,7 +96,9 @@ def add_user(db_file,sql):
     print("User Added")
 
 
-wdir = os.path.dirname(os.path.dirname(__file__))
+wdir = os.path.dirname(__file__)
+logger.info(f"Working Directory is {wdir}")
+logger.info(f"Working Directory is {wdir}")
 config_file = os.path.join(wdir,"config.ini")
 config = ConfigParser()
 config.read(config_file)
@@ -118,7 +123,7 @@ def send_index():
 
 @application.route('/signupform',method="POST")
 def form_handler():
-    fm_db = "/var/www/finnmaps/dbs/finnmaps.db"
+    fm_db = os.path.join(wdir,"dbs/finnmaps.db")
     jres = request.json
     # Strip out whitespace to help validate submissions
     name,email,number = jres['name'],jres['email'],jres['phone_number']

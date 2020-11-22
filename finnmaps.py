@@ -123,7 +123,7 @@ def send_index():
 
 @application.route('/signupform',method="POST")
 def form_handler():
-    fm_db = os.path.join(wdir,"finnmaps.db")
+    fm_db = os.path.join(wdir,"dbs/finnmaps.db")
     jres = request.json
     # Strip out whitespace to help validate submissions
     name,email,number = jres['name'],jres['email'],jres['phone_number']

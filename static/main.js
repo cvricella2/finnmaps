@@ -333,6 +333,10 @@ require([
   let visitData = new FeatureLayer({
     url:`${root_url}/1`
   });
+  let finnLastLocation = new FeatureLayer({
+    url:'https://services2.arcgis.com/O48sbyo4drQXsscH/arcgis/rest/services/finn_last_location/FeatureServer/0'
+  });
+
   finnPlaces.outFields = ["*"]
 
   const legend = new Legend({
@@ -340,7 +344,8 @@ require([
     layerInfos: [{
       layer: finnPlaces,
       title: " "
-    }]
+    },
+    {layer:finnLastLocation,title:"Finn's Last Reported Location"}]
   });
 
   const homeWidget = new Home({
@@ -361,6 +366,7 @@ require([
   view.ui.add(legendExpand, "top-right");
   view.ui.add(homeWidget,"bottom-left");
   map.add(finnPlaces);
+  map.add(finnLastLocation);
 
 // All the DOM events are defined below----------------------------------------
 

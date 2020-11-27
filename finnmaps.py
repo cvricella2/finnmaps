@@ -25,14 +25,17 @@ from arcgis import geometry,features
 
 logger = logging.getLogger(__name__)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-sh = logging.StreamHandler(sys.stdout)
-sh.setLevel(logging.DEBUG)
+sh_out = logging.StreamHandler(sys.stdout)
+fh = logging.FileHandler("/var/www/finnmaps/log.txt")
+fh.setLevel(logging.DEBUG)
+fh.setFormatter(formatter)
+sh_out.setLevel(logging.DEBUG)
+sh_out.setFormatter(formatter)
 logger.setLevel(logging.DEBUG)
-logger.addHandler(sh)
+logger.addHandler(sh_out)
+logger.addHandler(fh)
 logger.info("APP RUNNING")
 
-#sys.path.remove('/var/www/finnmaps/fmvenv/lib64/python3.6/site-packages/IPython/extensions')
-logger.info(sys.path)
 
 class SubmitError(Exception):
     """ Raised when a user makes an invalid submission to a form """
@@ -40,49 +43,44 @@ class SubmitError(Exception):
 
 def check_email(email):
     try:
+        logger.info("Checking email...")
         valid = validate_email(email)
         return valid.email
-    except Exception as e:
-        print(e)
-        return ''
+    except EmailNotValidError as e:
+        logger.warning(e)
 
 
 def check_number(number,region=None):
     try:
+        logger.info("Checking phone number...")
         pn_obj = phonenumbers.parse(number,region)
         pn_format = phonenumbers.PhoneNumberFormat.NATIONAL
         nice_num = phonenumbers.format_number(pn_obj,pn_format)
         return nice_num
-    except:
-        raise SubmitError("Failed to add number")
+    except NumberParseException as e:
+        logger.warning(e)
 
 
 def add_feature(coords,fl,placename,placetype):
-    try:
-        geom=geometry.Point(coords)
-        feature = features.Feature(geometry=geom,
-                                   attributes={'name':placename,'type':placetype})
-        resp = fl.edit_features(adds=[feature])
-        print(resp)
-    except:
-        raise SubmitError("Failed to Add Feature")
+    geom=geometry.Point(coords)
+    feature = features.Feature(geometry=geom,
+                               attributes={'name':placename,'type':placetype})
+    resp = fl.edit_features(adds=[feature])
+    logger.info(resp)
 
 
 def delete_feature(oid,fl):
     """ Deletes a feature using the arcgis for python api"""
-    try:
-        logger.info("Deleting {} feature".format(str(oid)))
-        resp = fl.edit_features(deletes=[oid])
-        logger.info(resp)
-    except Exception as e:
-        logger.error("",exc_info=True)
+    logger.info("Deleting {} feature".format(str(oid)))
+    resp = fl.edit_features(deletes=[oid])
+    logger.info(resp)
 
 
 def init_gis(username,password,portal_url,hfl_id):
     """Connect to the GIS, get the relevant HFS, return needed feature layer"""
     logger.info("Connecting to GIS portal")
     gis = GIS(portal_url,username,password)
-    logger.info("Finished Connecting...Connecting to HFL")
+    logger.info("Finished Connecting...Getting the HFL")
     hfl = gis.content.get(hfl_id)
     fl = hfl.layers[0]
     return fl
@@ -93,11 +91,10 @@ def add_user(db_file,sql):
     cur.execute(sql)
     db.commit()
     db.close()
-    print("User Added")
+    logger.info("User Added")
 
 
 wdir = os.path.dirname(__file__)
-logger.info(f"Working Directory is {wdir}")
 logger.info(f"Working Directory is {wdir}")
 config_file = os.path.join(wdir,"config.ini")
 config = ConfigParser()
@@ -111,6 +108,7 @@ application = Bottle()
 
 @application.route('/static/main.css')
 def send_css():
+    logger.info("CSS Sent")
     return static_file('main.css', root=os.path.join(wdir,'static'))
 
 @application.route('/static/main.js')
@@ -123,20 +121,23 @@ def send_index():
 
 @application.route('/signupform',method="POST")
 def form_handler():
-    fm_db = os.path.join(wdir,"dbs/finnmaps.db")
-    jres = request.json
-    # Strip out whitespace to help validate submissions
-    name,email,number = jres['name'],jres['email'],jres['phone_number']
+    try:
+        logger.info("User submitted sign up form, getting their info...")
+        fm_db = os.path.join(wdir,"dbs/finnmaps.db")
+        jres = request.json
+        name,email,number = jres['name'],jres['email'],jres['phone_number']
+        valid_email = check_email(email)
+        valid_number = check_number(number)
 
-    valid_email = check_email(email)
-    valid_number = check_number(number)
+        # to sign up must atleast give a name or email.
+        if valid_email or valid_number:
+            sql = f"insert into user_info values ('{name}','{valid_email}','{valid_number}')"
+            logger.info("Adding user...")
+            add_user(fm_db,sql)
+        else:logger.info("No valid number or email submitted, user not added")
+    except Exception:
+        logger.error("",exc_info=True)
 
-    # to sign up must atleast give a name or email.
-    sql = f"insert into user_info values ('{name}','{valid_email}','{valid_number}')"
-    if valid_email or valid_number:
-        add_user(fm_db,sql)
-    else:
-        print("Somethings not right, try again")
 
 @application.route('/addplace',method="POST")
 def add_place():
@@ -144,14 +145,13 @@ def add_place():
     coord = jres['coord']
     name = jres['name']
     type = jres['type']
-    print(str(coord) + "," + name + "," + type)
+    logger.info(str(coord) + "," + name + "," + type)
     add_feature(coord,place_layer,name,type)
 
 @application.route('/deleteplace',method="POST")
 def delete_place():
     jres = request.json
     oid = jres['oid']
-    logger.info("Delete Route Hit")
     delete_feature(oid,place_layer)
 
 

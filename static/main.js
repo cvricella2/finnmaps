@@ -12,9 +12,10 @@ require([
   "esri/widgets/Expand",
   "esri/widgets/Legend",
   "esri/widgets/Home",
-  "esri/core/watchUtils"
+  "esri/core/watchUtils",
+  "esri/widgets/Search"
 ],
-  function(MapView,Map,FeatureLayer,Expand,Legend,Home,watchUtils) {
+  function(MapView,Map,FeatureLayer,Expand,Legend,Home,watchUtils,Search) {
 
     // Variables in global scope used throughout Application-----------------------
     let addPlace = false;
@@ -352,6 +353,22 @@ require([
     view: view
   });
 
+  const searchWidget = new Search({
+    view: view,
+    allPlaceholder: "Find Address or Finn Place",
+    sources:[
+      {
+        layer:finnPlaces,
+        searchFields:['name'],
+        exactMatch:false,
+        name: "Finn Places",
+        placeholder: "Example: Camp Hero State Park",
+        zoomScale:9
+
+      }
+    ]
+  });
+
   const legendExpand = new Expand({
     expandIconClass: "esri-icon-key",
     view: view,
@@ -365,6 +382,9 @@ require([
   view.ui.add(editWidgetExpand, "bottom-right");
   view.ui.add(legendExpand, "top-right");
   view.ui.add(homeWidget,"bottom-left");
+  view.ui.add(searchWidget,"top-left");
+  view.ui.remove("zoom");
+
   map.add(finnPlaces);
   map.add(finnLastLocation);
 

@@ -21,6 +21,19 @@ require([
     let addPlace = false;
     let deletePlace = false;
     let highlight;
+    const imgDir = "./static/img"
+    const placeTypeConfig = {"Village Park":1,
+                             "Town Park":2,
+                             "County Park":3,
+                             "State Park":4,
+                             "National Park":5,
+                             "Preserve":6,
+                             "Eatery":7,
+                             "Store":8,
+                             "Monument":9,
+                             "Residence":10,
+                             "Other":11}
+    let placeTypeVal = "";
 
     const headerTitle = document.getElementById("headerTitle");
     const headerSubTitle = document.getElementById('headerSubTitle');
@@ -47,6 +60,9 @@ require([
     const noImgVid = document.createElement("p");
     const noParagraph = document.createElement("p");
     const rankText = document.createElement("span");
+    const placeTypeOption = document.getElementsByClassName("placeTypeOption")
+    const placeTypeDropdown = document.getElementById("placeTypeDropdown")
+    const placeTypeInput = document.getElementById("placeTypeInput")
 
     editWidgetExpand.id = "editWidgetContainer";
     editWidgetExpand.className = "esri-icon-map-pin esri-widget--button";
@@ -60,6 +76,7 @@ require([
                             "Yet About This Visit!";
     noImgVid.innerHTML = "Finn Didin't Take Any Photos or Videos " +
                          "During This Visit!";
+    
     
     // Reset all the forms when the page shows
     window.addEventListener("pageshow", function(){
@@ -500,11 +517,12 @@ require([
       //})
     //}
 
+
     if (addPlace === true) {
       let placeName = document.getElementById("placeName").value
-      let placeType = document.getElementById("placeTypeList").value
+      // let placeType = document.getElementById("placeType").value
       let msg = `Added ${placeName} 🐶`;
-      let data = {'name':placeName,'type':placeType,'coord':coord}
+      let data = {'name':placeName,'type':placeTypeVal,'coord':coord}
       data = JSON.stringify(data);
       $.ajax({
         type:"POST",
@@ -522,5 +540,27 @@ require([
     overlay.style.display= "none";
     editForm.reset();
   });
+
+  placeTypeInput.addEventListener("click",function(){
+    placeTypeDropdown.style.display = "block"
+  });
+
+
+  for (let key in placeTypeConfig) {
+    let span = document.createElement('span');
+    let img = document.createElement('img');
+    span.className = "placeTypeOption"
+    img.src = `${imgDir}/${key.toLowerCase().replace(" ","_")}.png`
+    img.style.verticalAlign = "middle"
+    span.innerHTML =  key + " "
+    placeTypeDropdown.appendChild(span);
+    span.appendChild(img);
+    span.addEventListener("click",function(){
+      placeTypeVal = `${placeTypeConfig[key]}`;
+      placeTypeDropdown.style.display="none";
+      placeTypeInput.value = key;
+
+    });
+  };
 
 });

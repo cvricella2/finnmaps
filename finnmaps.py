@@ -23,10 +23,17 @@ from configparser import ConfigParser
 from arcgis  import GIS
 from arcgis import geometry,features
 
+
+wdir = os.path.dirname(__file__)
+config_file = os.path.join(wdir,"config.ini")
+config = ConfigParser()
+config.read(config_file)
+log_dir = config.get("LOG","log_dir")
+log_file = os.path.join(log_dir,"log.txt")
 logger = logging.getLogger(__name__)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 sh_out = logging.StreamHandler(sys.stdout)
-fh = logging.FileHandler("/var/www/finnmaps/log.txt")
+fh = logging.FileHandler(log_file)
 fh.setLevel(logging.DEBUG)
 fh.setFormatter(formatter)
 sh_out.setLevel(logging.DEBUG)
@@ -94,11 +101,7 @@ def add_user(db_file,sql):
     logger.info("User Added")
 
 
-wdir = os.path.dirname(__file__)
 logger.info(f"Working Directory is {wdir}")
-config_file = os.path.join(wdir,"config.ini")
-config = ConfigParser()
-config.read(config_file)
 agol_user = config.get("GIS_VAR","agol_user")
 agol_pw = config.get("GIS_VAR","agol_pw")
 agol_url = config.get("GIS_VAR","agol_url")
@@ -114,6 +117,10 @@ def send_css():
 @application.route('/static/main.js')
 def send_js():
     return static_file('main.js', root=os.path.join(wdir,'static'))
+
+@application.route('/static/img/<filename>')
+def send_img(filename):
+    return static_file(filename, root=os.path.join(wdir,'static/img'))
 
 @application.route('/')
 def send_index():
@@ -158,4 +165,4 @@ def delete_place():
 
 
 if __name__ == '__main__':
-    application.run()
+    application.run(host="0.0.0.0")

@@ -62,10 +62,7 @@
         <label for="placename" class="formLabel">Place Name</label>
         <input type="text" placeholder = "Enter Name of The Place" name="placename" class="formField" id="placeName">
         <label for="placeTypeList" class="formLabel">Place Type</label>
-        <input type="text" readonly="readonly" placeholder = "Click to Select a Place Type" name="placetype" class="formField" id="placeTypeInput">
-        <div class = "dropdown">
-          <div id="placeTypeDropdown" class="dropdownContent"></div>
-        </div>
+        <input type="text" readonly placeholder = "Click to Select a Place Type" name="placetype" class="formField" id="placeTypeInput">
         <div class="finnMapBtn" id="editWidgetBtn">Add Place</div>
         <p class="widgetInfo" id="editWidgetInfo">
           Fill out the above fields, then hit "Add Place". After submission you can click anywhere
@@ -76,5 +73,6 @@
         <p class="widgetFooter" id="editWidgetFooter"> Thanks for The Suggestion! 🐶 </p>
       </div>
     </form>
+    <div id="placeTypeDropdown" class="dropdownContent"></div>
   </body>
   </html>

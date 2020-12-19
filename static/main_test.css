@@ -94,29 +94,50 @@ form{
 }
 
 .dropdown{
-  position: relative;
-  display:flex;
+  display:none;
+  flex-direction: column;
+  background-color: white;
+  position:absolute;
+  z-index: 3;
+  width:25%;
+  height:50%;
+  max-width:500px;
+  max-height:625px;
+  left: 50%;
+  top:50%;
+  transform: translate(-50%, -50%);
+  padding:1rem 2rem 2rem 2rem;
+  overflow: auto;
+  box-shadow: rgb(48, 47, 47) 0.06rem -0.06rem 0.4rem -0.03rem, rgb(48, 47, 47) -0.06rem 0.06rem 0.4rem -0.03rem;
 }
 
 .dropdownContent{
   display:none;
+  flex-direction: column;
+  background-color: white;
   position:absolute;
-  background-color: #f1f1f1;
-  min-width: 200px;
-  max-height:200px;
+  z-index: 3;
+  width:25%;
+  height:50%;
+  max-width:500px;
+  max-height:625px;
+  left: 50%;
+  top:50%;
+  transform: translate(-50%, -50%);
+  padding:1rem 2rem 2rem 2rem;
   overflow: auto;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  z-index: 1;
+  box-shadow: rgb(48, 47, 47) 0.06rem -0.06rem 0.4rem -0.03rem, rgb(48, 47, 47) -0.06rem 0.06rem 0.4rem -0.03rem;
 }
 
-.dropdownContent span {
+.dropdownContent a {
   color: black;
   padding: 12px 16px;
   text-decoration: none;
   display: block;
 }
 
-.dropdownContent span:hover {background-color: #ddd}
+/* Change color of dropdown links on hover */
+.dropdownContent a:hover {background-color: #ddd}
 
 .formContainer h3{
   margin: .5rem;
@@ -160,7 +181,7 @@ button {
 
 .finnMapBtn {
   padding: 1rem 2.5rem 1rem 2.5rem;
-  margin: 1.5rem 0 1rem 0;
+  margin: 1rem 0 1rem 0;
   background: #ccc;
   color: #222;
   font-family: inherit;
@@ -179,7 +200,7 @@ button {
 }
 
 .widgetInfo {
-  margin:.5rem 0 1rem 0;
+  margin:1rem 0 1rem 0;
 }
 
 .widgetFooter{
@@ -283,8 +304,7 @@ button {
   }
 
   .formContainer{
-    width:80%;
-    height:90%;
+    width:70%;
   }
 
   .widgetFooter{
@@ -305,6 +325,11 @@ button {
 
   .headerItem{
     margin:.25rem;
+  }
+
+  .dropdownContent{
+    max-height:200px;
+    overflow: scroll;
   }
 
 }

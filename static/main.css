@@ -29,6 +29,7 @@ body {
     padding:1rem;
     overflow: auto;
     border: solid;
+    max-width: 1250px;
    }
 
 #sidebarHeader{

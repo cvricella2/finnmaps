@@ -2,4 +2,6 @@ finnmaps.code-workspace
 *.db
 config.ini
 fmvenv/
-
+log/
+log/log.txt
+.gitignore

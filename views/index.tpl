@@ -20,13 +20,19 @@
         <div id = "sidebarContent">
           <p id="placeInfo" class="sidebarItem"></p>
           <aside id="visitHeader" class="sidebarItem"></aside>
-          <div id= "visitAttachments" class = "sidebarItem"></div>
-          <a href="#" id="nextAttach" class = "sidebarButton sidebarItem"> <strong>Next</strong> &raquo;</a>
           <div id="visitInfo" class = "sidebarItem"></div>
-          <a href="#" id="nextVisit" class = "sidebarButton sidebarItem"> <strong>See Next Visit</strong> &raquo;</a>
+          <aside id="visitControl" class = "visitControl">
+            <a href="#" id="prevVisit" class = "sidebarButton sidebarBtnLeft">&laquo; Previous Visit</a>
+            <a href="#" id="nextVisit" class = "sidebarButton sidebarBtnRight">Next Visit &raquo;</a>
+          </aside>
+          <div id= "visitAttachments" class = "sidebarItem"></div>
+          <aside id="imgControl" class = "visitControl">
+            <a href="#" id="prevAttach" class = "sidebarButton sidebarBtnLeft">&laquo; Previous</a>
+            <a href="#" id="nextAttach" class = "sidebarButton sidebarBtnRight">Next &raquo;</a>
+          </aside>
         </div>
         <div id="sidebarFooter" class = "sidebarItem">
-          <p><strong> Want to stay up to date with Finn? <a id="openForm" href="#">Click Here</a></strong></p>
+          <p>Want to stay up to date with Finn? <a id="openForm" href="#">Click Here</a></p>
         </div>
       </div>
       <div id="viewDiv"></div>

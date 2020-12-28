@@ -46,11 +46,25 @@ body {
 }
 
 .sidebarButton {
-  text-align: justify;
-  font-style: bold;
+  font-weight: bold;
   text-decoration: none;
   display:none;
   color:black;
+}
+
+.visitControl{
+  display:flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: .5rem;
+}
+
+.sidebarBtnLeft {
+  align-self:flex-start;
+}
+
+.sidebarBtnRight{
+  align-self:flex-end;
 }
 
 .sidebarButton:hover{
@@ -65,6 +79,7 @@ body {
 #sidebarFooter p {
   margin:0;
   padding:0;
+  font-weight:bold;
 }
 
 #sidebarContent {
@@ -211,6 +226,7 @@ button {
 }
 
 #visitDate {
+  font-weight:bold;
   margin: 0 0 0 auto;
 }
 
@@ -219,6 +235,7 @@ button {
 }
 
 #finnRank{
+  font-weight:bold;
   margin:0 .25rem 0 0;
 }
 
@@ -305,6 +322,10 @@ button {
   }
 
   .headerItem{
+    margin:.25rem;
+  }
+
+  .sidebarItem{
     margin:.25rem;
   }
 

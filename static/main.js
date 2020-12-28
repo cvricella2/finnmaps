@@ -40,7 +40,9 @@ require([
     const visitInfo = document.getElementById("visitInfo");
     const visitAttachments = document.getElementById("visitAttachments");
     const nextVisitButton = document.getElementById("nextVisit");
+    const prevVisitButton = document.getElementById("prevVisit");
     const nextAttachButton = document.getElementById("nextAttach");
+    const prevAttachButton = document.getElementById("prevAttach");
     const visitHeader = document.getElementById("visitHeader");
     const placeInfo = document.getElementById("placeInfo");
     const signupWidget = document.getElementById("signupWidget");
@@ -60,7 +62,6 @@ require([
     const noImgVid = document.createElement("p");
     const noParagraph = document.createElement("p");
     const rankText = document.createElement("span");
-    const placeTypeOption = document.getElementsByClassName("placeTypeOption")
     const placeTypeDropdown = document.getElementById("placeTypeDropdown")
     const placeTypeInput = document.getElementById("placeTypeInput")
 
@@ -92,7 +93,9 @@ require([
        visitAttachments.innerHTML = " ";
        visitInfo.innerHTML = " ";
        nextVisitButton.style.display = "none";
+       prevVisitButton.style.display = "none";
        nextAttachButton.style.display = "none";
+       prevAttachButton.style.display = "none";
        visitHeader.innerHTML = " ";
        visitDate.innerHTML = " ";
        placeInfo.innerHTML = " ";
@@ -104,7 +107,7 @@ require([
        visitHeader.style.display = 'flex';
        visitHeader.appendChild(visitDate);
        let relatedDataKeys = Object.keys(relatedData)
-       // If related data is empty let the user no by displaying
+       // If related data is empty let the user know by displaying
        // noImgVid and noParagraph elements. This will happen if
        // There are no related features to query when this function is
        // called by queryRelatedFetures().
@@ -122,8 +125,10 @@ require([
          }
        }
        visitInfo.append(relatedData[relatedDataKeys[0]].visit_paragraph);
-       nextVisitButton.style.display = "block";
-       nextAttachButton.style.display = "block";
+       nextVisitButton.style.display = "inline-flex";
+       prevVisitButton.style.display = "inline-flex";
+       nextAttachButton.style.display = "inline-flex";
+       prevAttachButton.style.display = "inline-flex";
        visitDate.innerHTML = relatedData[relatedDataKeys[0]].date_of_visit;
      };
 
@@ -138,7 +143,7 @@ require([
        // the index variables current_idx and next_idx exist to ensure the proper visit information
        // is displayed and that the user doesn't step outside of the index range. If the next_idx
        // is equal to the number of available keys we know that we are at the end of the array and
-       // need to go back tot he start.
+       // need to go back to the start.
        let visit_paragraph = visitInfo.children[0]
        let visit_attachment = visitAttachments.children[0]
        let relatedDataKeys = Object.keys(relatedData);
@@ -164,12 +169,41 @@ require([
      }
 
 
+     function prevVisit(relatedData) {
+      // Initialize the various variables needed to render the relevant visit information.
+      // the index variables current_idx and next_idx exist to ensure the proper visit information
+      // is displayed and that the user doesn't step outside of the index range. If the next_idx
+      // is equal to the number of available keys we know that we are at the end of the array and
+      // need to go back to the start.
+      let visit_paragraph = visitInfo.children[0]
+      let visit_attachment = visitAttachments.children[0]
+      let relatedDataKeys = Object.keys(relatedData);
+      // current_idx tells nextVisit where in the array of visit info stored in relatedData
+      // the index position is currently at (i.e. before we got to the next visit)
+      let current_idx = relatedDataKeys.indexOf(`${visit_paragraph.id}`)
+      // We know that we want to go to the next index position in the array
+      // so increment by one.
+      let next_idx = current_idx - 1
+      // Then this if ensures that if we are going to be outside the index range
+      // on the next visit, go back to the first position (i.e. 0)
+      if (current_idx === 0) { next_idx = 0 }
+      let visit = relatedData[relatedDataKeys[next_idx]]
+      visit_paragraph.replaceWith(visit.visit_paragraph);
+      visitDate.innerHTML = visit.date_of_visit;
+      // One last check, need to make sure we actually have attachments for the current visit.
+      // if not then the noImgVid element stores some text to let the user know.
+      if(!(visit.attachments.length === 0)) {
+         visit_attachment.replaceWith(visit.attachments[0]);
+      } else {
+        visit_attachment.replaceWith(noImgVid);
+      }
+    }
+
+
      function nextAttach(relatedData) {
        let visit_paragraph = visitInfo.children[0]
        let current_oid = parseInt(visit_paragraph.id);
        let visit_attachment = visitAttachments.children[0]
-       let relatedDataKeys = Object.keys(relatedData);
-       let current_idx = relatedDataKeys.indexOf(`${visit_paragraph.id}`)
        let attachments = relatedData[current_oid].attachments;
        if(!(attachments.length === 0)){
          let attach_idx = attachments.indexOf(visit_attachment);
@@ -181,6 +215,22 @@ require([
             };
        }
      }
+
+     function prevAttach(relatedData) {
+      let visit_paragraph = visitInfo.children[0]
+      let current_oid = parseInt(visit_paragraph.id);
+      let visit_attachment = visitAttachments.children[0]
+      let attachments = relatedData[current_oid].attachments;
+      if(!(attachments.length === 0)){
+        let attach_idx = attachments.indexOf(visit_attachment);
+
+        if(attach_idx === 0) {
+             visit_attachment.replaceWith(attachments[attachments.length - 1])
+        } else {
+             visit_attachment.replaceWith(attachments[attach_idx-1])
+           };
+      }
+    }
 
 
      function addRankStars (ranking) {
@@ -420,9 +470,18 @@ require([
    nextVisit(relatedData);
  });
 
+ prevVisitButton.addEventListener("click", function(event){
+  prevVisit(relatedData);
+});
+
  nextAttachButton.addEventListener("click", function(event){
    nextAttach(relatedData);
   });
+
+  prevAttachButton.addEventListener("click", function(event){
+    prevAttach(relatedData);
+   });
+ 
 
 // Below are all DOM events for the sign up form
  number_field.addEventListener("input", function(){

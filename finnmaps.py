@@ -49,6 +49,8 @@ class SubmitError(Exception):
     pass
 
 def check_email(email):
+    """ Checks an email to see if it's 'valid' it does not test if this email is actually
+        reachable, just if the address would be valid"""
     try:
         logger.info("Checking email...")
         valid = validate_email(email)
@@ -58,6 +60,7 @@ def check_email(email):
 
 
 def check_number(number,region=None):
+    """ Checks if a phone number is actually a phone number, it does not test if it's reachable"""
     try:
         logger.info("Checking phone number...")
         pn_obj = phonenumbers.parse(number,region)
@@ -69,6 +72,7 @@ def check_number(number,region=None):
 
 
 def add_feature(coords,fl,placename,placetype):
+    """ Add feature using the arcgis for python api"""
     geom=geometry.Point(coords)
     feature = features.Feature(geometry=geom,
                                attributes={'name':placename,'type':placetype})

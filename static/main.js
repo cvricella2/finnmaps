@@ -258,6 +258,7 @@ require([
            // Remove highlight if anywhere on map is clicked.
            if (highlight) {highlight.remove();}
            headerTitle.innerHTML = "Finn Maps";
+           headerSubTitle.style.display = "block";
            headerSubTitle.innerHTML = "Click any of the points on the map to view details on Finn's many Adventures!";
            visitHeader.style.display = "none";
            return
@@ -274,7 +275,8 @@ require([
          });
          headerTitle.innerHTML = graphic.attributes.name;
          placeInfo.innerHTML = graphic.attributes.comment;
-         headerSubTitle.innerHTML = "";
+        //  headerSubTitle.innerHTML = "";
+         headerSubTitle.style.display = "none";
          addRankStars(graphic.attributes.finn_rank);
          return graphic.attributes.OBJECTID
        }).then(function(objectId) {

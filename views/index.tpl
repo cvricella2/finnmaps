@@ -17,16 +17,16 @@
           <h2 id ="headerTitle" class="headerItem"> Finn Maps </h2>
           <p id="headerSubTitle" class="headerItem"> Click any of the points on the map to view details on Finn's many Adventures! </p>
         </div>
-        <div id = "sidebarContent">
-          <p id="placeInfo" class="sidebarItem"></p>
-          <aside id="visitHeader" class="sidebarItem"></aside>
-          <div id="visitInfo" class = "sidebarItem"></div>
-          <aside id="visitControl" class = "visitControl">
+        <div id = "sidebarContent" class="sidebarItem">
+          <p id="placeInfo" class="contentItem"></p>
+          <aside id="visitHeader" class="contentItem"></aside>
+          <div id="visitInfo" class = "contentItem"></div>
+          <aside id="visitControl" class = "contentControl contentItem">
             <a href="#" id="prevVisit" class = "sidebarButton sidebarBtnLeft">&laquo; Previous Visit</a>
             <a href="#" id="nextVisit" class = "sidebarButton sidebarBtnRight">Next Visit &raquo;</a>
           </aside>
-          <div id= "visitAttachments" class = "sidebarItem"></div>
-          <aside id="imgControl" class = "visitControl">
+          <div id= "visitAttachments" class = "contentItem"></div>
+          <aside id="imgControl" class = "contentControl contentItem">
             <a href="#" id="prevAttach" class = "sidebarButton sidebarBtnLeft">&laquo; Previous</a>
             <a href="#" id="nextAttach" class = "sidebarButton sidebarBtnRight">Next &raquo;</a>
           </aside>

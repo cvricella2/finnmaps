@@ -22,23 +22,82 @@ body {
   flex:3;
 }
 
+#overlay{
+  position:absolute;
+  display:none;
+  height:100%;
+  width:100%;
+  z-index:2;
+  background-color:grey;
+  opacity: 25%;
+}
+
+/* Start sidebar CSS */
+
 #sidebar {
-    display:flex;
-    flex-direction: column;
-    flex:2;
-    padding:1rem;
-    overflow: auto;
-    border: solid;
-    max-width: 1250px;
-   }
+  display:flex;
+  flex-direction: column;
+  flex:2;
+  padding:1rem;
+  overflow: auto;
+  border: solid;
+  max-width:1250px;
+}
+
+#sidebarFooter{
+  display:flex;
+  flex-direction:column;
+  margin-top:auto;
+}
+
+#sidebarFooter p {
+  font-weight:bold;
+  align-self:center;
+}
+
+#sidebarContent {
+  display:flex;
+  flex-direction: column;
+  flex-grow:1;
+}
 
 #sidebarHeader{
   display:flex;
   flex-direction:column;
 }
 
+#visitHeader {
+  display:none;
+  flex-direction: row;
+  align-items: center;
+}
+
+#visitDate {
+  font-weight:bold;
+  margin: 0 0 0 auto;
+}
+
+#visitInfo p {
+  margin:0rem;
+}
+
+#visitAttachments{
+  flex-grow:0;
+}
+
+#finnRank{
+  font-weight:bold;
+  margin:0 .25rem 0 0;
+}
+
 .sidebarItem {
   margin:.5rem;
+  flex-shrink:0;
+}
+
+.contentItem{
+  flex:1 0 auto;
+  margin:.25rem;
 }
 
 .sidebarNoInfo {
@@ -52,40 +111,38 @@ body {
   color:black;
 }
 
-.visitControl{
+.contentControl{
   display:flex;
   flex-direction: row;
-  justify-content: space-between;
-  margin: .5rem;
+  align-items: center;
 }
 
 .sidebarBtnLeft {
-  align-self:flex-start;
+  margin:0 .25rem 0 0;
 }
 
 .sidebarBtnRight{
-  align-self:flex-end;
+  margin: 0 0 0 auto;
 }
 
 .sidebarButton:hover{
   color:blue;
 }
 
-#sidebarFooter{
-  margin-top: auto;
+.headerItem{
   align-self: center;
+  margin:.5rem;
 }
 
-#sidebarFooter p {
-  margin:0;
-  padding:0;
-  font-weight:bold;
+.rankStar {
+  color: orange;
 }
 
-#sidebarContent {
-  display:flex;
-  flex-direction: column;
+.queryImg {
+  max-width:100%;
 }
+
+/* Start CSS for forms */
 
 form{
   font-size:1rem;
@@ -204,45 +261,6 @@ button {
   padding: 1rem;
 }
 
-#overlay{
-  position:absolute;
-  display:none;
-  height:100%;
-  width:100%;
-  z-index:2;
-  background-color:grey;
-  opacity: 25%;
-}
-
-#visitHeader {
-  display:none;
-  flex-direction: row;
-  align-items: center;
-}
-
-.headerItem{
-  align-self: center;
-  margin:.5rem;
-}
-
-#visitDate {
-  font-weight:bold;
-  margin: 0 0 0 auto;
-}
-
-#visitInfo p {
-  margin:0rem;
-}
-
-#finnRank{
-  font-weight:bold;
-  margin:0 .25rem 0 0;
-}
-
-.rankStar {
-  color: orange;
-}
-
 .closeButton {
   align-self: flex-end;
   font-size: 1.5rem;
@@ -251,10 +269,6 @@ button {
 
 .closeButton:hover {
   color:red;
-}
-
-.queryImg {
-  max-width:100%;
 }
 
 .eventMsg{
@@ -312,7 +326,7 @@ button {
   #sidebar{
     flex:4;
     font-size:smaller;
-    overflow:hidden;
+    overflow:auto;
   }
 
   #sidebarContent{

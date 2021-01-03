@@ -5,3 +5,5 @@ fmvenv/
 log/
 log/log.txt
 .gitignore
+.DS_Store
+.vscode/settings.json

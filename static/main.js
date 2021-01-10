@@ -20,6 +20,7 @@ require([
     // Variables in global scope used throughout Application-----------------------
     let addPlace = false;
     let deletePlace = false;
+    let visited = true;
     let highlight;
     const imgDir = "./static/img"
     const placeTypeConfig = {"Village Park":1,
@@ -61,6 +62,7 @@ require([
     const visitDate = document.createElement("span");
     const noImgVid = document.createElement("p");
     const noParagraph = document.createElement("p");
+    const notVisited = document.createElement("p");
     const rankText = document.createElement("span");
     const placeTypeDropdown = document.getElementById("placeTypeDropdown")
     const placeTypeInput = document.getElementById("placeTypeInput")
@@ -70,6 +72,7 @@ require([
     editWidgetExpand.setAttribute("title", "Add Places For Finn To Visit");
     noImgVid.className = "sidebarNoInfo";
     noParagraph.className = "sidebarNoInfo";
+    notVisited.className = "sidebarNoInfo"
     visitDate.id = "visitDate";
     rankText.id = "finnRank";
     rankText.innerHTML = "Finn Ranking: ";
@@ -77,7 +80,7 @@ require([
                             "Yet About This Visit!";
     noImgVid.innerHTML = "Finn Didin't Take Any Photos or Videos " +
                          "During This Visit!";
-    
+    notVisited.innerHTML = "<b>Finn Hasn't Visited Here Yet!</b>"
     
     // Reset all the forms when the page shows
     window.addEventListener("pageshow", function(){
@@ -112,11 +115,16 @@ require([
        // There are no related features to query when this function is
        // called by queryRelatedFetures().
        // Then return.
-       if (relatedDataKeys.length === 0) {
-         visitAttachments.append(noImgVid);
-         visitInfo.append(noParagraph);
+       if (!(visited)) {
+         visitInfo.append(notVisited);
          return
-       } else {
+       }
+       
+       if (relatedDataKeys.length === 0) {
+        visitAttachments.append(noImgVid);
+        visitInfo.append(noParagraph);
+        return
+      } else {
          let attachments = relatedData[relatedDataKeys[0]].attachments
          if (!(attachments.length === 0)) {
            visitAttachments.append(attachments[0]);
@@ -124,6 +132,7 @@ require([
            visitAttachments.append(noImgVid);
          }
        }
+       visitInfo.append(relatedData[relatedDataKeys[0]].tick_info);
        visitInfo.append(relatedData[relatedDataKeys[0]].visit_paragraph);
        nextVisitButton.style.display = "inline-flex";
        prevVisitButton.style.display = "inline-flex";
@@ -144,7 +153,8 @@ require([
        // is displayed and that the user doesn't step outside of the index range. If the next_idx
        // is equal to the number of available keys we know that we are at the end of the array and
        // need to go back to the start.
-       let visit_paragraph = visitInfo.children[0]
+       let visit_paragraph = visitInfo.children[1]
+       let tick_info = visitInfo.children[0]
        let visit_attachment = visitAttachments.children[0]
        let relatedDataKeys = Object.keys(relatedData);
        // current_idx tells nextVisit where in the array of visit info stored in relatedData
@@ -157,6 +167,7 @@ require([
        // on the next visit, go back to the first position (i.e. 0)
        if (relatedDataKeys.length === next_idx) { next_idx = 0 }
        let visit = relatedData[relatedDataKeys[next_idx]]
+       tick_info.replaceWith(visit.tick_info);
        visit_paragraph.replaceWith(visit.visit_paragraph);
        visitDate.innerHTML = visit.date_of_visit;
        // One last check, need to make sure we actually have attachments for the current visit.
@@ -175,7 +186,8 @@ require([
       // is displayed and that the user doesn't step outside of the index range. If the next_idx
       // is equal to the number of available keys we know that we are at the end of the array and
       // need to go back to the start.
-      let visit_paragraph = visitInfo.children[0]
+      let visit_paragraph = visitInfo.children[1]
+      let tick_info = visitInfo.children[0]
       let visit_attachment = visitAttachments.children[0]
       let relatedDataKeys = Object.keys(relatedData);
       // current_idx tells nextVisit where in the array of visit info stored in relatedData
@@ -188,6 +200,7 @@ require([
       // on the next visit, go back to the first position (i.e. 0)
       if (current_idx === 0) { next_idx = 0 }
       let visit = relatedData[relatedDataKeys[next_idx]]
+      tick_info.replaceWith(visit.tick_info);
       visit_paragraph.replaceWith(visit.visit_paragraph);
       visitDate.innerHTML = visit.date_of_visit;
       // One last check, need to make sure we actually have attachments for the current visit.
@@ -233,22 +246,47 @@ require([
     }
 
 
+    //  function addRankStars (ranking) {
+    //      let breakpoint = 1;
+    //      if (ranking) {
+    //        visitHeader.appendChild(rankText);
+    //        for (x of Array(ranking).keys()) {
+    //          console.log ("X is: "+x)
+    //          console.log("Break Point is:"+ breakpoint)
+    //          let span = document.createElement("span")
+    //          span.className = "rankStar"
+    //          span.innerHTML = "&#9733"
+    //          visitHeader.appendChild(span)
+    //          if (breakpoint === ranking ) {
+    //            break
+    //          }
+    //          breakpoint++;
+    //        }
+    //      }
+    //  }
+
+
      function addRankStars (ranking) {
-         let breakpoint = 1;
-         if (ranking) {
-           visitHeader.appendChild(rankText);
-           for (x of Array(ranking).keys()) {
-             let span = document.createElement("span")
-             span.className = "rankStar"
-             span.innerHTML = "&#9733"
-             visitHeader.appendChild(span)
-             if (breakpoint === ranking ) {
-               break
-             }
-             breakpoint++;
-           }
-         }
-     }
+      if (ranking) {
+        visitHeader.appendChild(rankText);
+        for (x of Array(ranking).keys()) {
+          console.log ("X is: "+x)
+          let span = document.createElement("span")
+          span.className = "rankStar"
+          span.innerHTML = "&#9733"
+          visitHeader.appendChild(span)
+        }
+        if (ranking < 5){
+          let noFill = 5 - ranking
+          for (x of Array(noFill).keys()) {
+            let span = document.createElement("span");
+            span.className = "rankStarNoFill"
+            span.innerHTML = "&#9733"
+            visitHeader.appendChild(span)
+          }
+        }
+      }
+  }
 
 
      function createSidebar(screenPoint) {
@@ -278,6 +316,9 @@ require([
         //  headerSubTitle.innerHTML = "";
          headerSubTitle.style.display = "none";
          addRankStars(graphic.attributes.finn_rank);
+         if (graphic.attributes.visited != 1) {
+           visited = false;
+         }
          return graphic.attributes.OBJECTID
        }).then(function(objectId) {
            // Query the for the related features for the features ids found
@@ -287,6 +328,7 @@ require([
              objectIds: objectId
            });
          }).then(function (relatedFeatureSetByObjectId) {
+           console.log(relatedFeatureSetByObjectId);
            let relatedFeatureSetKeys = Object.keys(relatedFeatureSetByObjectId);
            if (relatedFeatureSetKeys.length === 0){
              updateSidebar(relatedData);
@@ -313,10 +355,14 @@ require([
                                   note:note,
                                   attachments:[]};
 
-               let visit_paragraph = document.createElement("p")
-               visit_paragraph.id = feature.attributes.OBJECTID
-               visit_paragraph.innerHTML = feature.attributes.note
-               relatedData[feature.attributes.OBJECTID].visit_paragraph = visit_paragraph;
+               let visit_paragraph = document.createElement("p");
+               let tick_info = document.createElement("span");
+               visit_paragraph.id = oid
+               visit_paragraph.innerHTML = `${note}`
+               tick_info.id = oid
+               tick_info.innerHTML = `<b>Ticks Found:</b> ${num_ticks_found}`
+               relatedData[oid].visit_paragraph = visit_paragraph;
+               relatedData[oid].tick_info = tick_info;
              });
 
              let relatedDataKeys = Object.keys(relatedData);

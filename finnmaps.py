@@ -114,6 +114,7 @@ def send_css():
 
 @application.route('/static/main.js')
 def send_js():
+    logger.info("JS Sent")
     return static_file('main.js', root=os.path.join(wdir,'static'))
 
 @application.route('/static/img/<filename>')
@@ -122,6 +123,7 @@ def send_img(filename):
 
 @application.route('/')
 def send_index():
+    logger.info("Index Sent")
     return template(os.path.join(wdir,"views/index.tpl"))
 
 @application.route('/signupform',method="POST")

@@ -15,7 +15,7 @@ TO DO:
 - Ios script to update finn last reported location layer on AGOL
 - Get app working on python anywhere; redirect domain to personal site
 """
-from bottle import Bottle,template,request,static_file
+from bottle import Bottle,template,request,static_file,response
 import os,sqlite3,json,phonenumbers,logging,sys
 from email_validator import validate_email, EmailNotValidError
 from phonenumbers.phonenumberutil import NumberParseException
@@ -141,7 +141,13 @@ def form_handler():
             sql = f"insert into user_info values ('{name}','{valid_email}','{valid_number}')"
             logger.info("Adding user...")
             add_user(fm_db,sql)
-        else:logger.info("No valid number or email submitted, user not added")
+            response.set_header('Content-Type','application/json')
+            return json.dumps({"message": "Application Submitted"})
+        else:
+            response.set_header('Content-Type','application/json')
+            response.status = 406
+            return json.dumps({"message": "Application Failed"})
+            logger.info("No valid number or email submitted, user not added")
     except Exception:
         logger.error("",exc_info=True)
 
@@ -151,9 +157,9 @@ def add_place():
     jres = request.json
     coord = jres['coord']
     name = jres['name']
-    type = jres['type']
-    logger.info(str(coord) + "," + name + "," + type)
-    add_feature(coord,place_layer,name,type)
+    place_type = jres['type']
+    logger.info(str(coord) + "," + name + "," + place_type)
+    add_feature(coord,place_layer,name,place_type)
 
 @application.route('/deleteplace',method="POST")
 def delete_place():

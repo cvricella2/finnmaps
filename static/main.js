@@ -18,6 +18,41 @@ require([
   function(MapView,Map,FeatureLayer,Expand,Legend,Home,watchUtils,Search) {
 
     // Variables in global scope used throughout Application-----------------------
+
+    function createAlert(msg,bgColor,fontColor,parent,addCloseBtn=true,addAnimation=false,closeBtnColor="red"){
+      const alertContainer = document.createElement("aside");
+      const parentContainer = document.getElementById(parent);
+  
+      alertContainer.className = "alertContainer";
+      alertContainer.style.backgroundColor = bgColor;
+      
+      if (addCloseBtn){
+          const closeBtn = document.createElement("span");
+          closeBtn.className = "alertCloseBtn"
+          closeBtn.innerHTML = "&times";  
+          closeBtn.style.color = closeBtnColor;
+          alertContainer.appendChild(closeBtn);
+          closeBtn.addEventListener("click", function () {
+          alertContainer.style.display = "none";
+       })
+      }
+
+      if (addAnimation){
+        alertContainer.style.animation = "fadeInOut 3s linear forwards";
+      }
+
+      const alertMsg = document.createElement("p");
+      alertMsg.innerHTML = msg;
+      alertMsg.style.color = fontColor;
+      alertContainer.appendChild(alertMsg);
+
+      parentContainer.appendChild(alertContainer);
+      alertContainer.style.display ="flex";
+
+      return alertContainer
+
+    }  
+
     let addPlace = false;
     let deletePlace = false;
     let visited = true;
@@ -408,6 +443,7 @@ require([
   function editComplete(msg,coord){
     //deletePlace = false;
     addPlace = false;
+    viewDiv.style.cursor = "default";
     if (highlight) {
       highlight.remove();
     }
@@ -428,6 +464,7 @@ require([
       })
     }, 2000);
   }
+  
 
 // Set up map and view---------------------------------------------------------
   var map = new Map({
@@ -555,7 +592,8 @@ require([
       url: "/signupform",
       data:data,
       contentType:"application/json",
-      dataType:"json"
+      success: function(){createAlert(`Thanks For Signing Up ${name}, Finn Will Be In Touch!`,"white","black","viewDiv")},
+      error: function(){createAlert("Your Submission Failed! Please Try Again!","red","black","viewDiv",true,false,"black")}
     })
     submitForm.reset();
     signupWidget.style.display = "none";
@@ -577,6 +615,8 @@ require([
 
   editWidgetBtn.addEventListener("click",function(){
     addPlace = true;
+    createAlert("Place Ready To Add, Click Anywhere On The Map!","white","black","viewDiv")
+    viewDiv.style.cursor = "crosshair";
     editWidget.style.display = "none";
     overlay.style.display= "none";
   })
@@ -669,5 +709,6 @@ require([
 
     });
   };
+
 
 });

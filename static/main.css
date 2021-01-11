@@ -32,6 +32,36 @@ body {
   opacity: 25%;
 }
 
+/* Start custom alert CSS */
+
+.alertContainer {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, 0);
+  display: none;
+  flex-direction: column;
+  padding: 1rem;
+  font-size: 1rem;
+  box-shadow: rgb(48, 47, 47) 0.06rem -0.06rem 0.4rem -0.03rem, rgb(48, 47, 47) -0.06rem 0.06rem 0.4rem -0.03rem;
+}
+
+.alertContainer p {
+  text-align: center;
+  font-size: 1rem;
+  color: white;
+  font-weight: bold;
+  padding: 0;
+  margin:0;
+}
+
+.alertCloseBtn {
+  align-self: flex-start;
+  font-weight: bold;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
 /* Start sidebar CSS */
 
 #sidebar {
@@ -301,7 +331,7 @@ button {
 }
 
 .elementToFadeInAndOut {
-    animation: fadeInOut 3s linear forwards;
+    animation: fadeInOut 10s linear forwards;
 }
 
 /* For some reason firefox adds a text-indent no matter what, this is a hacky solution */

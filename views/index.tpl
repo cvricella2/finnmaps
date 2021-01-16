@@ -58,7 +58,7 @@
           visit somewhere and when any major changes happen to Finn Maps. Your name is not required unless you would like
           to recieve a personalized notification (e.g. Hi Karen!). If this ever changes you will be notified and given the option to opt out.
         </p>
-        <p class="widgetFooter" id="signupWidgetFooter"> All The Best 🐶 </p>
+        <p class="widgetFooter" id="signupWidgetFooter"> All The Best 🐶</p>
       </div>
     </form>
     <form name = "editForm" method="post" action="/">
@@ -73,11 +73,13 @@
           <div id="placeTypeDropdown" class="dropdownContent"></div>
         </div>
         <div class="finnMapBtn" id="editWidgetBtn">Add Place</div>
+        <div class="finnMapBtn" id="deleteBtn">Delete Place</div>
         <p class="widgetInfo" id="editWidgetInfo">
-          Fill out the above fields, then hit "Add Place". After submission you can click anywhere
+          Fill out the above fields, then hit "<b>Add Place</b>". After submission you can click anywhere
           on the map to add the location of the place you think Finn should visit. The map will automatically update,
           if you don't see your place right away don't worry, it can sometimes take a moment and you may need to
-          zoom in and out to see the change.
+          zoom in and out to see the change. If you need to delete a place, click "<b>Delete Place</b>" to delete it; you can only
+          delete places you've added in your current session.
         </p>
         <p class="widgetFooter" id="editWidgetFooter"> Thanks for The Suggestion! 🐶 </p>
       </div>

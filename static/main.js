@@ -19,7 +19,15 @@ require([
 
     // Variables in global scope used throughout Application-----------------------
 
-    function createAlert(msg,bgColor,fontColor,parent,addCloseBtn=true,addAnimation=false,closeBtnColor="red"){
+    function createAlert(msg,bgColor,fontColor,parent,destroyOld=true,addCloseBtn=true,closeBtnColor="red"){
+      
+      if (destroyOld){
+        let oldAlerts = document.getElementsByClassName("alertContainer");
+        for (let alert of oldAlerts){
+          alert.remove();
+        }
+      }
+
       const alertContainer = document.createElement("aside");
       const parentContainer = document.getElementById(parent);
   
@@ -29,16 +37,13 @@ require([
       if (addCloseBtn){
           const closeBtn = document.createElement("span");
           closeBtn.className = "alertCloseBtn"
-          closeBtn.innerHTML = "&times";  
+          closeBtn.innerHTML = "&times";
+          console.log(closeBtnColor);
           closeBtn.style.color = closeBtnColor;
           alertContainer.appendChild(closeBtn);
           closeBtn.addEventListener("click", function () {
           alertContainer.style.display = "none";
        })
-      }
-
-      if (addAnimation){
-        alertContainer.style.animation = "fadeInOut 3s linear forwards";
       }
 
       const alertMsg = document.createElement("p");
@@ -91,7 +96,7 @@ require([
     const editForm = document.getElementsByName("editForm")[0];
     const editWidget = document.getElementById("editWidget");
     const editWidgetBtn = document.getElementById("editWidgetBtn");
-    //const deleteBtn = document.getElementById("deleteBtn");
+    const deleteBtn = document.getElementById("deleteBtn");
     const closeEditWidget = document.getElementById("closeEditWidget");
     const editWidgetExpand = document.createElement("aside");
     const visitDate = document.createElement("span");
@@ -104,7 +109,7 @@ require([
 
     editWidgetExpand.id = "editWidgetContainer";
     editWidgetExpand.className = "esri-icon-map-pin esri-widget--button";
-    editWidgetExpand.setAttribute("title", "Add Places For Finn To Visit");
+    editWidgetExpand.setAttribute("title", "Open Place Edit Widget");
     noImgVid.className = "sidebarNoInfo";
     noParagraph.className = "sidebarNoInfo";
     notVisited.className = "sidebarNoInfo"
@@ -281,31 +286,10 @@ require([
     }
 
 
-    //  function addRankStars (ranking) {
-    //      let breakpoint = 1;
-    //      if (ranking) {
-    //        visitHeader.appendChild(rankText);
-    //        for (x of Array(ranking).keys()) {
-    //          console.log ("X is: "+x)
-    //          console.log("Break Point is:"+ breakpoint)
-    //          let span = document.createElement("span")
-    //          span.className = "rankStar"
-    //          span.innerHTML = "&#9733"
-    //          visitHeader.appendChild(span)
-    //          if (breakpoint === ranking ) {
-    //            break
-    //          }
-    //          breakpoint++;
-    //        }
-    //      }
-    //  }
-
-
      function addRankStars (ranking) {
       if (ranking) {
         visitHeader.appendChild(rankText);
         for (x of Array(ranking).keys()) {
-          console.log ("X is: "+x)
           let span = document.createElement("span")
           span.className = "rankStar"
           span.innerHTML = "&#9733"
@@ -343,7 +327,6 @@ require([
            if (highlight) {
              highlight.remove();
           }
-         console.log("Highlighting")
          highlight = layerView.highlight(graphic);
          });
          headerTitle.innerHTML = graphic.attributes.name;
@@ -363,7 +346,6 @@ require([
              objectIds: objectId
            });
          }).then(function (relatedFeatureSetByObjectId) {
-           console.log(relatedFeatureSetByObjectId);
            let relatedFeatureSetKeys = Object.keys(relatedFeatureSetByObjectId);
            if (relatedFeatureSetKeys.length === 0){
              updateSidebar(relatedData);
@@ -437,34 +419,62 @@ require([
         });
        };
   
-  /**  All the stuff that should be done after an edit is made 
+  // /**  All the stuff that should be done after an edit is made 
+  //  * @param msg Alert message for user after edit.
+  // */
+  // function editComplete(msg,coord){
+  //   //deletePlace = false;
+  //   addPlace = false;
+  //   viewDiv.style.cursor = "default";
+  //   if (highlight) {
+  //     highlight.remove();
+  //   }
+  //   let div = document.createElement("div");
+  //   div.className = "eventMsg";
+  //   div.classList.add("elementToFadeInAndOut");
+  //   div.classList.add("esri-component");
+  //   div.classList.add("esri-widget");
+  //   div.innerHTML=`<p> ${msg} </p>`;
+  //   let innerView = document.getElementsByClassName("esri-ui-inner-container")[0];
+  //   innerView.append(div);
+  //   setTimeout(function(){
+  //     innerView.removeChild(div);
+  //     finnPlaces.refresh();
+  //     view.goTo({
+  //       target:coord,
+  //       zoom:view.zoom+2
+  //     })
+  //   }, 2000);
+  // }
+  
+
+    /**  All the stuff that should be done after an edit is made 
    * @param msg Alert message for user after edit.
   */
-  function editComplete(msg,coord){
-    //deletePlace = false;
-    addPlace = false;
-    viewDiv.style.cursor = "default";
-    if (highlight) {
-      highlight.remove();
-    }
-    let div = document.createElement("div");
-    div.className = "eventMsg";
-    div.classList.add("elementToFadeInAndOut");
-    div.classList.add("esri-component");
-    div.classList.add("esri-widget");
-    div.innerHTML=`<p> ${msg} </p>`;
-    let innerView = document.getElementsByClassName("esri-ui-inner-container")[0];
-    innerView.append(div);
-    setTimeout(function(){
-      innerView.removeChild(div);
-      finnPlaces.refresh();
-      view.goTo({
-        target:coord,
-        zoom:view.zoom+2
-      })
-    }, 2000);
+ function editComplete(msg,coord){
+  addPlace = false;
+  deletePlace = false;
+  viewDiv.style.cursor = "default";
+  if (highlight) {
+    highlight.remove();
   }
-  
+  setTimeout(function(){
+    finnPlaces.refresh();
+    createAlert(msg,"white","black","viewDiv")
+    view.goTo({
+      target:coord,
+      zoom:view.zoom+1
+    })
+  }, 1000);
+}
+
+function editError(msg){
+  addPlace = false;
+  deletePlace = false;
+  viewDiv.style.cursor = "default"
+  createAlert(msg,"red","white","viewDiv",true,true,"white")
+}
+
 
 // Set up map and view---------------------------------------------------------
   var map = new Map({
@@ -543,14 +553,6 @@ require([
 // All the DOM events are defined below----------------------------------------
 
 // Below are all DOM events for the sidebar
- view.on("click", function (event) {
-   if (deletePlace === false){
-     console.log(deletePlace);
-     clearSideBar()
-     createSidebar(event);
-   }
- });
-
  nextVisitButton.addEventListener("click", function(event){
    nextVisit(relatedData);
  });
@@ -593,7 +595,7 @@ require([
       data:data,
       contentType:"application/json",
       success: function(){createAlert(`Thanks For Signing Up ${name}, Finn Will Be In Touch!`,"white","black","viewDiv")},
-      error: function(){createAlert("Your Submission Failed! Please Try Again!","red","black","viewDiv",true,false,"black")}
+      error: function(){createAlert("Your Submission Failed! Please Try Again!","red","white","viewDiv",true,true,"white")}
     })
     submitForm.reset();
     signupWidget.style.display = "none";
@@ -621,12 +623,13 @@ require([
     overlay.style.display= "none";
   })
 
-  //deleteBtn.addEventListener("click",function(){
-    //deletePlace = true;
-    //editWidget.style.display = "none";
-    //overlay.style.display= "none";
-    //editForm.reset();
-  //})
+  deleteBtn.addEventListener("click",function(){
+    deletePlace = true;
+    createAlert("Delete Enabled, Click Place You Want To Delete","white","black","viewDiv")
+    viewDiv.style.cursor = "crosshair";
+    editWidget.style.display = "none";
+    overlay.style.display= "none";
+  })
 
   watchUtils.whenTrue(view, "navigating", function () {
     finnPlaces.refresh();
@@ -635,40 +638,46 @@ require([
   view.on("click",function(evt){
     let pt = view.toMap({ x: evt.x, y: evt.y })
     var coord = [pt.longitude,pt.latitude]
-    console.log(coord)
-    //if (deletePlace === true) {
-      //view.hitTest(evt).then(function (response) {
-        //let result = response.results;
-        //if (result === 0){
-          //console.log("Nothing to delete here.")
-          //return 
-        //}
-        //let attributes = response.results[0].graphic.attributes;
-        //let oid = attributes.OBJECTID;
-        //let placeName = attributes.name;
-        //let deleteAttributes = [oid,placeName]
-        //return deleteAttributes
-      //}).then(function(deleteAttributes){
-        //let data = {'oid':deleteAttributes[0]}
-        //let msg = `${deleteAttributes[1]} was deleted! 🐶`
-        //data = JSON.stringify(data);
-        //$.ajax({
-          //type:"POST",
-          //url: "finnmaps/deleteplace",
-          //data:data,
-          //contentType:"application/json",
-          //complete:editComplete(msg,coord)
-        //})
-      //}).catch(function(error){
-        //console.log(error);
-      //})
-    //}
 
+    if (deletePlace === false && addPlace === false){
+      clearSideBar()
+      createSidebar(evt);
+      return
+    }
+
+    if (deletePlace === true) {
+      view.hitTest(evt).then(function (response) {
+        let result = response.results;
+        if (result === 0){
+          return 
+        }
+        let attributes = response.results[0].graphic.attributes;
+        let oid = attributes.OBJECTID;
+        let placeName = attributes.name;
+        let deleteAttributes = [oid,placeName]
+        return deleteAttributes
+      }).then(function(deleteAttributes){
+        let data = {'oid':deleteAttributes[0]}
+        let msg = `${deleteAttributes[1]} was deleted! 🐶`
+        let errMsg = "Delete Failed! :C"
+        data = JSON.stringify(data);
+        $.ajax({
+          type:"POST",
+          url: "/deleteplace",
+          data:data,
+          contentType:"application/json",
+          success:function(){editComplete(msg,coord)},
+          error:function(){editError(errMsg)}
+        })
+      }).catch(function(error){
+        console.log(error);
+      })
+    }
 
     if (addPlace === true) {
       let placeName = document.getElementById("placeName").value
-      // let placeType = document.getElementById("placeType").value
       let msg = `Added ${placeName} 🐶`;
+      let errMsg = "Add Place Failed! :C Check Parameters And Try Again"
       let data = {'name':placeName,'type':placeTypeVal,'coord':coord}
       data = JSON.stringify(data);
       $.ajax({
@@ -677,7 +686,8 @@ require([
         data:data,
         contentType:"application/json",
         dataType:"json",
-        complete: editComplete(msg,coord)
+        success: function(){editComplete(msg,coord)},
+        error:function(){editError(errMsg)}
       })
     }
   });

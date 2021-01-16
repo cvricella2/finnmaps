@@ -132,7 +132,7 @@ require([
 
     /** Clears the sidebar if anywhere different is clicked on the map from
     the last click */
-     function clearSideBar() {
+     function clearSidebar() {
        visitAttachments.innerHTML = " ";
        visitInfo.innerHTML = " ";
        nextVisitButton.style.display = "none";
@@ -311,32 +311,54 @@ require([
      function createSidebar(screenPoint) {
        relatedData = {};
        view.hitTest(screenPoint).then(function(response){
-         if(response.results.length === 0) {
-           // Remove highlight if anywhere on map is clicked.
-           if (highlight) {highlight.remove();}
-           headerTitle.innerHTML = "Finn Maps";
-           headerSubTitle.style.display = "block";
-           headerSubTitle.innerHTML = "Click any of the points on the map to view details on Finn's many Adventures!";
-           visitHeader.style.display = "none";
-           return
-         }
+        if(response.results.length === 0) {
+
+          if (highlight) {highlight.remove();}
+
+          let searchRes = response.screenPoint.result;
+
+          if (searchRes){
+          let attributes = searchRes.feature.attributes;
+          headerTitle.innerHTML = attributes.name;
+          placeInfo.innerHTML = attributes.comment;
+          headerSubTitle.style.display = "none";
+          addRankStars(attributes.finn_rank);
+
+          if (attributes.visited != 1) {
+            visited = false;
+          }
+
+          return attributes.OBJECTID
+          }
+
+          headerTitle.innerHTML = "Finn Maps";
+          headerSubTitle.style.display = "block";
+          headerSubTitle.innerHTML = "Click any of the points on the map to view details on Finn's many Adventures!";
+          visitHeader.style.display = "none";
+          return
+        }
          let graphic = response.results[0].graphic
          // Highlights feature when clicked, removes highlight if
          // new feature is clicked.
          view.whenLayerView(graphic.layer).then(function(layerView){
-           if (highlight) {
+
+          if (highlight) {
+             searchWidget.clear();
              highlight.remove();
           }
-         highlight = layerView.highlight(graphic);
+
+          highlight = layerView.highlight(graphic);
          });
+
          headerTitle.innerHTML = graphic.attributes.name;
          placeInfo.innerHTML = graphic.attributes.comment;
-        //  headerSubTitle.innerHTML = "";
          headerSubTitle.style.display = "none";
          addRankStars(graphic.attributes.finn_rank);
+
          if (graphic.attributes.visited != 1) {
            visited = false;
          }
+
          return graphic.attributes.OBJECTID
        }).then(function(objectId) {
            // Query the for the related features for the features ids found
@@ -411,7 +433,7 @@ require([
                  })
                })
              })
-            setTimeout(function(){updateSidebar(relatedData)},1000);
+            setTimeout(function(){updateSidebar(relatedData)},1500);
          })
        }
         }).catch(function(error){
@@ -524,8 +546,9 @@ function editError(msg){
         searchFields:['name'],
         exactMatch:false,
         name: "Finn Places",
+        outFields: ["*"],
         placeholder: "Example: Camp Hero State Park",
-        zoomScale:9
+        zoomScale:9,
 
       }
     ]
@@ -635,12 +658,17 @@ function editError(msg){
     finnPlaces.refresh();
   });
 
+  searchWidget.on("select-result",function(event){
+    clearSidebar()
+    createSidebar(event)
+  })
+
   view.on("click",function(evt){
     let pt = view.toMap({ x: evt.x, y: evt.y })
     var coord = [pt.longitude,pt.latitude]
 
     if (deletePlace === false && addPlace === false){
-      clearSideBar()
+      clearSidebar()
       createSidebar(evt);
       return
     }

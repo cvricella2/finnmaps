@@ -105,6 +105,7 @@ agol_pw = config.get("GIS_VAR","agol_pw")
 agol_url = config.get("GIS_VAR","agol_url")
 finnmaps_hfl_id = config.get("GIS_VAR","hfl_id")
 place_layer = init_gis(agol_user,agol_pw,agol_url,finnmaps_hfl_id)
+last_oid = ""
 application = Bottle()
 
 @application.route('/static/main.css')
@@ -135,17 +136,16 @@ def form_handler():
         name,email,number = jres['name'],jres['email'],jres['phone_number']
         valid_email = check_email(email)
         valid_number = check_number(number)
+        response.set_header('Content-Type','application/json')
 
         # to sign up must atleast give a name or email.
         if valid_email or valid_number:
             sql = f"insert into user_info values ('{name}','{valid_email}','{valid_number}')"
             logger.info("Adding user...")
             add_user(fm_db,sql)
-            response.set_header('Content-Type','application/json')
             return json.dumps({"message": "Application Submitted"})
         else:
-            response.set_header('Content-Type','application/json')
-            response.status = 406
+            response.status = 400
             return json.dumps({"message": "Application Failed"})
             logger.info("No valid number or email submitted, user not added")
     except Exception:
@@ -158,16 +158,30 @@ def add_place():
     coord = jres['coord']
     name = jres['name']
     place_type = jres['type']
-    logger.info(str(coord) + "," + name + "," + place_type)
-    add_feature(coord,place_layer,name,place_type)
+    response.set_header('Content-Type','application/json')
+    if place_type and name:
+        logger.info(str(coord) + "," + name + "," + place_type)
+        add_feature(coord,place_layer,name,place_type)
+        return json.dumps({"message": "Add Successful"})
+    else:
+        response.status = 400
+        return json.dumps({"message": "Add Failed, Must Enter Both a Valid Place Type and Name"})
+
 
 @application.route('/deleteplace',method="POST")
 def delete_place():
+    ip = request.environ.get('HTTP_X_FORWARDED_FOR') or request.environ.get('REMOTE_ADDR')
+    admin_ip = ['192.168.1.13']
+    logger.info(f"Client's IP is {ip}")
     jres = request.json
     oid = jres['oid']
-    delete_feature(oid,place_layer)
-
-
+    response.set_header('Content-Type','application/json')
+    if ip not in admin_ip:
+        response.status = 400
+        return json.dumps({'message':'Delete Failed'})
+    else:
+        delete_feature(oid,place_layer)
+        return json.dumps({'message':'Delete Successful'})
 
 
 if __name__ == '__main__':

@@ -310,8 +310,12 @@ require([
 
      function createSidebar(screenPoint) {
        relatedData = {};
+       visited = true;
        view.hitTest(screenPoint).then(function(response){
-        if(response.results.length === 0) {
+
+        if(response.results.length === 0 || response.results[0].graphic.layer.Id === 1) {
+
+          console.log("Triggerd")
 
           if (highlight) {highlight.remove();}
 
@@ -324,11 +328,11 @@ require([
           headerSubTitle.style.display = "none";
           addRankStars(attributes.finn_rank);
 
-          if (attributes.visited != 1) {
-            visited = false;
-          }
+            if (attributes.visited != 1) {
+              visited = false;
+            }
 
-          return attributes.OBJECTID
+            return attributes.OBJECTID
           }
 
           headerTitle.innerHTML = "Finn Maps";
@@ -336,7 +340,7 @@ require([
           headerSubTitle.innerHTML = "Click any of the points on the map to view details on Finn's many Adventures!";
           visitHeader.style.display = "none";
           return
-        }
+        } 
          let graphic = response.results[0].graphic
          // Highlights feature when clicked, removes highlight if
          // new feature is clicked.
@@ -513,13 +517,15 @@ function editError(msg){
   const root_url = "https://services2.arcgis.com/O48sbyo4drQXsscH/arcgis/rest/" +
                    "services/Finn_Maps_HFS_Public/FeatureServer";
   let finnPlaces = new FeatureLayer({
-    url:`${root_url}/0`
+    url:`${root_url}/0`,
+    Id:0
   });
   let visitData = new FeatureLayer({
     url:`${root_url}/1`
   });
   let finnLastLocation = new FeatureLayer({
-    url:'https://services2.arcgis.com/O48sbyo4drQXsscH/arcgis/rest/services/finn_last_location/FeatureServer/0'
+    url:'https://services2.arcgis.com/O48sbyo4drQXsscH/arcgis/rest/services/finn_last_location/FeatureServer/0',
+    Id:1
   });
 
   finnPlaces.outFields = ["*"]
@@ -530,7 +536,7 @@ function editError(msg){
       layer: finnPlaces,
       title: " "
     },
-    {layer:finnLastLocation,title:"Finn's Last Reported Location"}]
+    {layer:finnLastLocation,title:""}]
   });
 
   const homeWidget = new Home({

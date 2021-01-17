@@ -16,7 +16,7 @@ TO DO:
 - Get app working on python anywhere; redirect domain to personal site
 """
 from bottle import Bottle,template,request,static_file,response
-import os,sqlite3,json,phonenumbers,logging,sys
+import os,sqlite3,json,phonenumbers,logging,sys,uuid
 from email_validator import validate_email, EmailNotValidError
 from phonenumbers.phonenumberutil import NumberParseException
 from configparser import ConfigParser
@@ -72,14 +72,15 @@ def add_feature(coords,fl,placename,placetype):
                                attributes={'name':placename,'type':placetype})
     resp = fl.edit_features(adds=[feature])
     logger.info(resp)
+    return resp['addResults'][0]['objectId']
 
 
 def delete_feature(oid,fl):
     """ Deletes a feature using the arcgis for python api"""
-    logger.info("Deleting {} feature".format(str(oid)))
+    logger.info(f"Deleting feature with OBJECTID: {str(oid)}")
     resp = fl.edit_features(deletes=[oid])
     logger.info(resp)
-
+   
 
 def init_gis(username,password,portal_url,hfl_id):
     """Connect to the GIS, get the relevant HFS, return needed feature layer"""
@@ -90,13 +91,51 @@ def init_gis(username,password,portal_url,hfl_id):
     fl = hfl.layers[0]
     return fl
 
-def add_user(db_file,sql):
-    db = sqlite3.connect(db_file)
-    cur = db.cursor()
-    cur.execute(sql)
-    db.commit()
-    db.close()
-    logger.info("User Added")
+
+def execute_sql(db_file,sql,return_result=False):
+    """
+    Connects to the database file and executes a query, the query is commited 
+    and the connection closed.
+
+    Args:
+        db_file ([type]): [description]
+        sql ([type]): [description]
+    """    
+    conn = sqlite3.connect(db_file)
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    conn.commit()
+    if return_result:
+        result = cursor.fetchall()
+        conn.close()
+        return result
+    conn.close()
+
+
+def check_session(db_file):
+    """ Gets the current session used by the client if it exists, if not a new session key is created and added
+        to the finn maps database.
+    """
+    key = request.get_cookie("sessionid")
+    result = execute_sql(db_file,f"SELECT key FROM edit_sessions WHERE key='{key}'",return_result=True)
+    if result:
+        logger.info(f"Returning User With Key: {key}")
+        return
+        
+    key = str(uuid.uuid4())
+    execute_sql(db_file,f"INSERT INTO edit_sessions VALUES ('{key}')")
+    response.set_cookie("sessionid",key)
+    logger.info(f"Adding new session with key: {key}")
+    
+
+
+def user_owns_place(db_file,key,oid):
+    """ Checks if a user (key) owns/added the given feature (oid) """
+    check_sql = f"SELECT oid FROM added_places WHERE key = '{key}' and oid = {oid}"
+    result = execute_sql(db_file,check_sql,True)
+    if result:
+        return True
+    return False
 
 
 logger.info(f"Working Directory is {wdir}")
@@ -105,7 +144,8 @@ agol_pw = config.get("GIS_VAR","agol_pw")
 agol_url = config.get("GIS_VAR","agol_url")
 finnmaps_hfl_id = config.get("GIS_VAR","hfl_id")
 place_layer = init_gis(agol_user,agol_pw,agol_url,finnmaps_hfl_id)
-last_oid = ""
+fm_db = os.path.join(wdir,"dbs/finnmaps.db")
+
 application = Bottle()
 
 @application.route('/static/main.css')
@@ -124,14 +164,13 @@ def send_img(filename):
 
 @application.route('/')
 def send_index():
-    logger.info("Index Sent")
+    check_session(fm_db)
     return template(os.path.join(wdir,"views/index.tpl"))
 
 @application.route('/signupform',method="POST")
 def form_handler():
     try:
         logger.info("User submitted sign up form, getting their info...")
-        fm_db = os.path.join(wdir,"dbs/finnmaps.db")
         jres = request.json
         name,email,number = jres['name'],jres['email'],jres['phone_number']
         valid_email = check_email(email)
@@ -142,7 +181,8 @@ def form_handler():
         if valid_email or valid_number:
             sql = f"insert into user_info values ('{name}','{valid_email}','{valid_number}')"
             logger.info("Adding user...")
-            add_user(fm_db,sql)
+            execute_sql(fm_db,sql)
+            logger.info("User added")
             return json.dumps({"message": "Application Submitted"})
         else:
             response.status = 400
@@ -161,7 +201,9 @@ def add_place():
     response.set_header('Content-Type','application/json')
     if place_type and name:
         logger.info(str(coord) + "," + name + "," + place_type)
-        add_feature(coord,place_layer,name,place_type)
+        oid = add_feature(coord,place_layer,name,place_type)
+        key = request.get_cookie("sessionid")
+        execute_sql(fm_db,f"INSERT INTO added_places VALUES ({oid},'{key}')")
         return json.dumps({"message": "Add Successful"})
     else:
         response.status = 400
@@ -175,13 +217,16 @@ def delete_place():
     logger.info(f"Client's IP is {ip}")
     jres = request.json
     oid = jres['oid']
+    key = request.get_cookie("sessionid")
+    logger.info(str(user_owns_place(fm_db,key,oid)))
     response.set_header('Content-Type','application/json')
-    if ip not in admin_ip:
-        response.status = 400
-        return json.dumps({'message':'Delete Failed'})
-    else:
+    if user_owns_place(fm_db,key,oid) or ip in admin_ip:
         delete_feature(oid,place_layer)
         return json.dumps({'message':'Delete Successful'})
+    else:
+        response.status = 400
+        return json.dumps({'message':'Delete Failed'})
+
 
 
 if __name__ == '__main__':

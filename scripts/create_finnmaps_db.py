@@ -38,7 +38,8 @@ def check_table_exists(db_file,table_name):
     conn.close()
     return table_exists
 
-def execute_sql(db_file,sql):
+
+def execute_sql(db_file,sql,return_result=False):
     """
     Connects to the database file and executes a query, the query is commited 
     and the connection closed.
@@ -51,7 +52,30 @@ def execute_sql(db_file,sql):
     cursor = conn.cursor()
     cursor.execute(sql)
     conn.commit()
+    if return_result:
+        result = cursor.fetchall()
+        conn.close()
+        return result
     conn.close()
+    
+
+def create_edit_session_tables(db_file):
+
+    execute_sql(db_file,"DROP TABLE IF EXISTS edit_sessions")
+    execute_sql(db_file,"DROP TABLE IF EXISTS added_places")
+
+    session_sql = """
+                  CREATE TABLE IF NOT EXISTS edit_sessions (
+                    key text unique primary key);
+
+                  """
+    added_sql = """
+                CREATE TABLE IF NOT EXISTS added_places (
+                oid integer, key text);
+                
+                """
+    
+    for sql in  [session_sql,added_sql]: execute_sql(db_file,sql)
 
 if __name__ == "__main__":
     wdir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))

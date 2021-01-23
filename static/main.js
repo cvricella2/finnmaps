@@ -106,6 +106,8 @@ require([
     const rankText = document.createElement("span");
     const placeTypeDropdown = document.getElementById("placeTypeDropdown")
     const placeTypeInput = document.getElementById("placeTypeInput")
+    const helpWidget = document.createElement("div")
+
 
     editWidgetExpand.id = "editWidgetContainer";
     editWidgetExpand.className = "esri-icon-map-pin esri-widget--button";
@@ -121,6 +123,50 @@ require([
     noImgVid.innerHTML = "Finn Didin't Take Any Photos or Videos " +
                          "During This Visit!";
     notVisited.innerHTML = "<b>Finn Hasn't Visited Here Yet!</b>"
+    helpWidget.className = "esri-widget esri-widget--panel";
+    helpWidget.innerHTML = `<h2 style="text-align:center;"> Finn Maps How To </h2>
+                            <h3 style="text-align:center; text-decoration:underline;">Map Operations</h3>
+                            <h4 style="text-align:center;">Navigating</h4>
+                            <ul>
+                              <li>On desktop left click, hold and drag to move the map. On mobile the same can be accomplished by touching, holding and draging</li>
+                              <li>You can zoom in and out using your mouse wheel, by double clicking on the map, or using "+" "-" keys.
+                              On mobile, zooming can be accomplished by pinching the fingers together to zoom in, or apart to zoom out.
+                              Zooming can also be done via the zoom widget located in the top left corner ("+" and "-" buttons) on both
+                              mobile and desktop. </li>
+                              <li>Click the home widget, in the bottom left corner to zoom the map out to where it started</li>
+                            </ul>
+                            <h4 style="text-align:center;">Searching</h4>
+                            <ul>
+                              <li>You can search for a specific address, a Finn Place or your current location using the search widget. The search widget is located in the bottom left,
+                              click the magnifying glass to open it. Once clicked you'll see an option to "Use current location" which will zoom to where you're currently located. Type in any address to zoom there
+                              related suggestions will pop-up, you can also change what is searched first by clicking the small arrow to the left of the search bar.</li>
+                            </ul>
+                            <h4 style = "text-align:center;">Viewing Finn Places</h4>
+                            <ul>
+                              <li>Click on one of the green and white icons (Finn Places) to view information about what Finn has done there. This will update the sidebar</li>
+                              <li>The sidebar has information about the place itself (at the top), Finn's visit (center), and a footer with a clickable link that brings up a form (bottom)</li>
+                              <li>The visit information contains all the data that we record every time finn visits a place, if there are multiple visits you can scroll through them by
+                                  clicking "Previous" or "Next" visit buttons above the photo or video. Visits sometimes also have multiple photos or videos to view, you can scroll through these in the same fashion,
+                                  by clicking the "Previous" or "Next" buttons found below the photo or video. 
+                              <li>Lastly clicking on the link to stay up to date with finn will bring up a form to fill out. Please read the disclaimer before you submit it.</li>
+                           </ul>
+                           <h3 style="text-align:center; text-decoration:underline;">Adding and Deleting Places</h3>
+                           <p style="text-align:center;">Click the pin in the lower right corner</p>
+                           <h4 style="text-align:center;">Adding Places</h4>
+                            <ol>
+                              <li>Fill out the form fields, both are required</li>
+                              <li>Click "Add Place" this will close the widget and alert you that editing is enabled</li>
+                              <li>You can now click anywhere on the map to add the place, you will be alerted when it's complete</li>
+                           </ol>
+                           <h4 style="text-align:center;">Deleting Places</h4>
+                             <ol>
+                               <li>Click "Delete Place" this will close the widget and alert you that editing is enabled</li>
+                               <li>
+                               To delete a place, you just need to click it; however you can only delete places you yourself have added.
+                               If you're are private browsing, this will be limited to your current session.
+                               </li>
+                            </ol>
+                           `;
     
     // Reset all the forms when the page shows
     window.addEventListener("pageshow", function(){
@@ -512,7 +558,7 @@ function editError(msg){
     map: map,
     container: "viewDiv",
     center: [-72.991659,40.902234],
-    zoom:9
+    zoom:10
   });
 
   const root_url = "https://services2.arcgis.com/O48sbyo4drQXsscH/arcgis/rest/" +
@@ -546,7 +592,7 @@ function editError(msg){
 
   const searchWidget = new Search({
     view: view,
-    allPlaceholder: "Find Address or Finn Place",
+    allPlaceholder: "Search...",
     sources:[
       {
         layer:finnPlaces,
@@ -565,22 +611,40 @@ function editError(msg){
     expandIconClass: "esri-icon-key",
     view: view,
     content: legend,
-    mode:"auto",
+    group:"top-right",
     expandTooltip:"Open Map Key",
     collapseTooltip:"Close Map Key"
   });
 
+  const helpExpand = new Expand({
+    expandIconClass: "esri-icon-description",
+    view:view,
+    group:"top-right",
+    content:helpWidget,
+    expandTooltip:"Open Help",
+    collapseTooltip:"Close Help"
+  })
+
 // Add stuff to the map and view
-  view.ui.add(editWidgetExpand, "bottom-right");
   view.ui.add(legendExpand, "top-right");
-  view.ui.add(homeWidget,"bottom-left");
-  view.ui.add(searchWidget,"top-left");
-  view.ui.remove("zoom");
+  view.ui.move("zoom","top-left");
+  view.ui.add(homeWidget,"top-left");
+  view.ui.add(searchWidget,"bottom-left");
+  view.ui.add(helpExpand, "top-right");
+  view.ui.add(editWidgetExpand, "top-right");
 
   map.add(finnPlaces);
   map.add(finnLastLocation);
 
 // All the DOM events are defined below----------------------------------------
+
+view.when(function(){
+  console.log(view.width)
+  if (view.width < 400){
+    view.zoom = 7
+    view.center = [-73.091659,40.802234]
+  }
+})
 
 // Below are all DOM events for the sidebar
  nextVisitButton.addEventListener("click", function(event){

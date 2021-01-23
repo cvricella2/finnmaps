@@ -62,6 +62,31 @@ body {
   cursor: pointer;
 }
 
+.widgetContainer {
+  display:flex;
+  flex-direction: column;
+  padding: 1rem;
+  font-size:1rem;
+  background-color:white;
+  width: 300px;
+  max-height:680px;
+  overflow:auto;
+}
+
+.widgetSection h4 {
+   text-align:center;
+   text-decoration:underline;
+}
+
+.widgetContainer h2 {
+  text-align:center;
+  text-decoration:underline;
+}
+
+.esri-widget--panel {
+  padding:.5rem;
+}
+
 /* Start sidebar CSS */
 
 #sidebar {
@@ -409,5 +434,10 @@ button {
 
   #sidebar{
     flex:3;
+  }
+
+  .formContainer{
+    width:50%;
+    height:65%;
   }
 }

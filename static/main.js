@@ -639,7 +639,9 @@ function editError(msg){
 // All the DOM events are defined below----------------------------------------
 
 view.when(function(){
-  console.log(view.width)
+  if (view.width < 2400){
+    view.zoom = 9
+  }
   if (view.width < 400){
     view.zoom = 7
     view.center = [-73.091659,40.802234]

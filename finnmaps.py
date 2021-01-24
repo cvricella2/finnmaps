@@ -120,12 +120,13 @@ def check_session(db_file):
     result = execute_sql(db_file,f"SELECT key FROM edit_sessions WHERE key='{key}'",return_result=True)
     if result:
         logger.info(f"Returning User With Key: {key}")
-        return
+        return True
         
     key = str(uuid.uuid4())
     execute_sql(db_file,f"INSERT INTO edit_sessions VALUES ('{key}')")
-    response.set_cookie("sessionid",key)
+    response.set_cookie("sessionid",key,max_age=31540000)
     logger.info(f"Adding new session with key: {key}")
+    return False
     
 
 
@@ -164,8 +165,11 @@ def send_img(filename):
 
 @application.route('/')
 def send_index():
-    check_session(fm_db)
-    return template(os.path.join(wdir,"views/index.tpl"))
+    logger.info("Index Sent")
+    has_session = check_session(fm_db)
+    if has_session:
+        return template(os.path.join(wdir,"views/index.tpl"))
+    return template(os.path.join(wdir,"views/index_first_visit.tpl"))
 
 @application.route('/signupform',method="POST")
 def form_handler():

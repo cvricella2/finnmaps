@@ -32,6 +32,33 @@ body {
   opacity: 25%;
 }
 
+.splashContainer{
+  z-index:1;
+  position:absolute;
+  display:flex;
+  flex-direction: column;
+  background-color:white;
+  padding:1rem;
+  max-width: 600px;
+  width: 40%;
+  left:50%;
+  top:50%;
+  transform: translate(-50%, -50%);
+}
+
+.splashBody{
+  margin-top:.5rem;
+  margin-bottom:.5rem;
+}
+
+.splashContainer h2{
+  text-align:center;
+}
+
+.splashBody p{
+  text-align:center;
+}
+
 /* Start custom alert CSS */
 
 .alertContainer {

@@ -4,7 +4,7 @@ body {
   width: 100%;
   margin: 0;
   padding: 0;
-  font-family: "Avenir Next W00","Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-family: "Avenir Next","Helvetica Neue",Helvetica,Arial,sans-serif;
   overflow: hidden;
 }
 
@@ -44,6 +44,7 @@ body {
   left:50%;
   top:50%;
   transform: translate(-50%, -50%);
+  box-shadow: rgb(48, 47, 47) 0.06rem -0.06rem 0.4rem -0.03rem, rgb(48, 47, 47) -0.06rem 0.06rem 0.4rem -0.03rem;
 }
 
 .splashBody{
@@ -341,15 +342,15 @@ button {
   font-weight: bold;
   text-align:center;
   align-self:center;
-  box-shadow: rgb(48, 47, 47) 0.06rem -0.06rem 0.4rem -0.03rem, rgb(48, 47, 47) -0.06rem 0.06rem 0.4rem -0.03rem;
+  border:2px solid black;
 }
 
 .finnMapBtn:hover {
-  background:#bdbdbd;
+  background:#ccc;
 }
 
 .finnMapBtn:active {
-  background:#ccc;
+  background:#bdbdbd;
 }
 
 .widgetInfo {
@@ -400,7 +401,7 @@ button {
  100% { opacity:0; }
 }
 
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 850px) {
   input[type="text"]
  {
     font-size: 16px;
@@ -452,9 +453,15 @@ button {
     max-height:100%;
   }
 
+  .splashContainer{
+    width:80%;
+    height:90%;
+    overflow:auto;
+  }
+
 }
 
-@media screen and (orientation: landscape) and (max-width: 800px){
+@media screen and (orientation: landscape) and (max-width: 850px){
   #flexContainer{
     flex-direction: row;
   }
@@ -464,6 +471,11 @@ button {
   }
 
   .formContainer{
+    width:50%;
+    height:65%;
+  }
+
+  .splashContainer{
     width:50%;
     height:65%;
   }

@@ -78,6 +78,7 @@ require([
 
     const headerTitle = document.getElementById("headerTitle");
     const headerSubTitle = document.getElementById('headerSubTitle');
+    const headerImg = document.getElementById('headerImg');
     const visitInfo = document.getElementById("visitInfo");
     const visitAttachments = document.getElementById("visitAttachments");
     const nextVisitButton = document.getElementById("nextVisit");
@@ -372,6 +373,7 @@ require([
           headerTitle.innerHTML = attributes.name;
           placeInfo.innerHTML = attributes.comment;
           headerSubTitle.style.display = "none";
+          headerImg.style.display = "none";
           addRankStars(attributes.finn_rank);
 
             if (attributes.visited != 1) {
@@ -383,7 +385,8 @@ require([
 
           headerTitle.innerHTML = "Finn Maps";
           headerSubTitle.style.display = "block";
-          headerSubTitle.innerHTML = "Click any of the points on the map to view details on Finn's many Adventures!";
+          headerSubTitle.innerHTML = "Click any of the points on the map to view details on Finn's many adventures!";
+          headerImg.style.display = "block";
           visitHeader.style.display = "none";
           searchWidget.clear();
           return
@@ -404,6 +407,7 @@ require([
          headerTitle.innerHTML = graphic.attributes.name;
          placeInfo.innerHTML = graphic.attributes.comment;
          headerSubTitle.style.display = "none";
+         headerImg.style.display = "none";
          addRankStars(graphic.attributes.finn_rank);
 
          if (graphic.attributes.visited != 1) {

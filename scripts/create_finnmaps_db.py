@@ -59,39 +59,44 @@ def execute_sql(db_file,sql,return_result=False):
     conn.close()
     
 
-def create_edit_session_tables(db_file):
+if __name__ == "__main__":
+    wdir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+    db_file= os.path.join(wdir,"dbs/finnmaps.db")
+    print(wdir)
 
-    execute_sql(db_file,"DROP TABLE IF EXISTS edit_sessions")
-    execute_sql(db_file,"DROP TABLE IF EXISTS added_places")
+    user_sql = """ 
+                CREATE TABLE IF NOT EXISTS user_info (
+                name text,
+                email text,
+                phone_number text);
+
+               """
 
     session_sql = """
                   CREATE TABLE IF NOT EXISTS edit_sessions (
-                    key text unique primary key);
-
+                  key text unique primary key);
+                  
                   """
+
     added_sql = """
                 CREATE TABLE IF NOT EXISTS added_places (
                 oid integer, key text);
                 
                 """
-    
-    for sql in  [session_sql,added_sql]: execute_sql(db_file,sql)
 
-if __name__ == "__main__":
-    wdir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-    os.chdir(wdir)
-    db_file="finnmaps.db"
-    table_name="user_info"
-    print(f"Creating {db_file} at {wdir}")
-    # No data type for datetimes in sqlite,
-    # instead use integer to store as unix time.
-    create_table_sql = f""" CREATE TABLE IF NOT EXISTS {table_name} (
-                                        name text,
-                                        email text,
-                                        phone_number text
-                                    ); """
-    create_db(db_file)
-    print(f"Creating {table_name} in {db_file}")
-    execute_sql(db_file,create_table_sql)
-    if not check_table_exists(db_file,table_name):
-        raise Error(f"{table_name} was not created")
+    tables = {"user_info":user_sql,"edit_sessions":session_sql,"added_places":added_sql}
+    
+    if not os.path.exists(db_file):
+        print("Database file does not exist, creating it")
+        create_db(db_file)
+
+    else: print("Database already exists, file not created")
+ 
+    for table,sql in tables.items():
+        # No data type for datetimes in sqlite,
+        # instead use integer to store as unix time.
+        if not check_table_exists(db_file,table):
+            print(f"{table} does not exist, creating it using: {sql}")
+            execute_sql(db_file,sql)
+        else: print(f"{table} already exists, not created")
+

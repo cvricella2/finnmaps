@@ -44,7 +44,9 @@ body {
   left:50%;
   top:50%;
   transform: translate(-50%, -50%);
-  box-shadow: rgb(48, 47, 47) 0.06rem -0.06rem 0.4rem -0.03rem, rgb(48, 47, 47) -0.06rem 0.06rem 0.4rem -0.03rem;
+  box-shadow: rgb(48, 47, 47) 0.06rem -0.06rem 0.4rem -0.05rem, rgb(48, 47, 47) -0.06rem 0.06rem 0.4rem -0.05rem;
+  border-radius:15px;
+  overflow:auto;
 }
 
 .splashBody{
@@ -71,7 +73,8 @@ body {
   flex-direction: column;
   padding: 1rem;
   font-size: 1rem;
-  box-shadow: rgb(48, 47, 47) 0.06rem -0.06rem 0.4rem -0.03rem, rgb(48, 47, 47) -0.06rem 0.06rem 0.4rem -0.03rem;
+  box-shadow: rgb(48, 47, 47) 0.06rem -0.06rem 0.4rem -0.05rem, rgb(48, 47, 47) -0.06rem 0.06rem 0.4rem -0.05rem;
+  border-radius: 0px 0px 15px 15px;
 }
 
 .alertContainer p {
@@ -265,7 +268,8 @@ form{
   transform: translate(-50%, -50%);
   padding:1rem 2rem 2rem 2rem;
   overflow: auto;
-  box-shadow: rgb(48, 47, 47) 0.06rem -0.06rem 0.4rem -0.03rem, rgb(48, 47, 47) -0.06rem 0.06rem 0.4rem -0.03rem;
+  box-shadow: rgb(48, 47, 47) 0.06rem -0.06rem 0.4rem -0.05rem, rgb(48, 47, 47) -0.06rem 0.06rem 0.4rem -0.05rem;
+  border-radius:15px;
 }
 
 .dropdown{
@@ -342,7 +346,8 @@ button {
   font-weight: bold;
   text-align:center;
   align-self:center;
-  border:2px solid black;
+  cursor: default;
+  border-radius:10px;
 }
 
 .finnMapBtn:hover {
@@ -364,13 +369,11 @@ button {
 }
 
 .closeButton {
-  align-self: flex-end;
+  align-self: flex-start;
   font-size: 1.5rem;
   text-decoration: none;
-}
-
-.closeButton:hover {
   color:red;
+  font-weight:bold;
 }
 
 .eventMsg{
@@ -421,6 +424,10 @@ button {
     height:90%;
   }
 
+  .splashContainer{
+    width:80%;
+  }
+
   .widgetFooter{
     margin:0;
   }
@@ -453,12 +460,6 @@ button {
     max-height:100%;
   }
 
-  .splashContainer{
-    width:80%;
-    height:90%;
-    overflow:auto;
-  }
-
 }
 
 @media screen and (orientation: landscape) and (max-width: 850px){
@@ -476,7 +477,7 @@ button {
   }
 
   .splashContainer{
-    width:50%;
-    height:65%;
+    width:65%;
+    height:80%;
   }
 }

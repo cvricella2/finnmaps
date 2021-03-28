@@ -15,7 +15,8 @@
       <div id="sidebar">
         <div id="sidebarHeader" class="sidebarItem">
           <h2 id ="headerTitle" class="headerItem"> Finn Maps </h2>
-          <p id="headerSubTitle" class="headerItem"> Click any of the points on the map to view details on Finn's many Adventures! </p>
+          <img id = headerImg src ="https://cvgeospatial.maps.arcgis.com/sharing/rest/content/items/ed64d835a83942d98765dd2c02f1e40a/data" class="headerItem queryImg">
+          <p id="headerSubTitle" class="headerItem"> Click any of the points on the map to view details on Finn's many adventures! </p>
         </div>
         <div id = "sidebarContent" class="sidebarItem">
           <p id="placeInfo" class="contentItem"></p>
@@ -32,7 +33,7 @@
           </aside>
         </div>
         <div id="sidebarFooter" class = "sidebarItem">
-          <p>Want to stay up to date with Finn? <a id="openForm" href="#">Click Here</a></p>
+          <p>Want to stay up to date with Finn? <a id="openForm" href="#">Click here</a></p>
         </div>
       </div>
       <div id="viewDiv"></div>
@@ -40,7 +41,7 @@
     </div>
     <form name = "submitForm" method="post" action="/">
       <div class ="formContainer" id ="signupWidget">
-        <a href="#" class = "closeButton" id="closeForm">x</a>
+        <a href="#" class = "closeButton" id="closeForm">&times</a>
         <h3> Recieve Updates Regarding Finn Maps? </h3>
         <label for="name" class="formLabel">Name</label>
         <input type="text" placeholder = "Enter Full Name" name="name" class="formField" id="name">
@@ -63,7 +64,7 @@
     </form>
     <form name = "editForm" method="post" action="/">
       <div class = "formContainer" id ="editWidget">
-        <a href="#" class = "closeButton" id="closeEditWidget">x</a>
+        <a href="#" class = "closeButton" id="closeEditWidget">&times</a>
         <h3 id = "addPlaceHeader"> Suggest a Place for Finn to Visit! </h3>
         <label for="placename" class="formLabel">Place Name</label>
         <input type="text" placeholder = "Enter Name of The Place" name="placename" class="formField" id="placeName">
@@ -85,16 +86,16 @@
       </div>
     </form>
     <div class="splashContainer" id="welcomeSplash">
-      <h2>Welcome To Finn Maps</h2>
+      <h2>Welcome to Finn Maps</h2>
       <div class="splashBody">
-        <p>Finn's a Dog on a Mission...To Sniff As Many Things as Possible
+        <p>Finn's a dog on a mission...to sniff as many things as possible
         <br>
         <br>
-        Enjoy Viewing His Adventures and Feel Free To Suggest New Places For Him Visit! 
-        If At Anytime You Need Help, Click The Help Button In The Top Right Corner
+        Enjoy viewing his adventures and feel free to suggest new places for him to visit! 
+        If at anytime you need help, click the help button in the top right corner
         <br>
         <br>
-        Thanks For Visiting!
+        Thanks for visiting!
         </p>
       </div>
       <div class="finnMapBtn" id="splashBtn">Got It!</div>

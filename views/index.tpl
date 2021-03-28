@@ -15,7 +15,8 @@
       <div id="sidebar">
         <div id="sidebarHeader" class="sidebarItem">
           <h2 id ="headerTitle" class="headerItem"> Finn Maps </h2>
-          <p id="headerSubTitle" class="headerItem"> Click any of the points on the map to view details on Finn's many Adventures! </p>
+          <img id = headerImg src ="https://cvgeospatial.maps.arcgis.com/sharing/rest/content/items/ed64d835a83942d98765dd2c02f1e40a/data" class="headerItem queryImg">
+          <p id="headerSubTitle" class="headerItem"> Click any of the points on the map to view details on Finn's many adventures! </p>
         </div>
         <div id = "sidebarContent" class="sidebarItem">
           <p id="placeInfo" class="contentItem"></p>
@@ -32,7 +33,7 @@
           </aside>
         </div>
         <div id="sidebarFooter" class = "sidebarItem">
-          <p>Want to stay up to date with Finn? <a id="openForm" href="#">Click Here</a></p>
+          <p>Want to stay up to date with Finn? <a id="openForm" href="#">Click here</a></p>
         </div>
       </div>
       <div id="viewDiv"></div>
@@ -40,7 +41,7 @@
     </div>
     <form name = "submitForm" method="post" action="/">
       <div class ="formContainer" id ="signupWidget">
-        <a href="#" class = "closeButton" id="closeForm">x</a>
+        <a href="#" class = "closeButton" id="closeForm">&times</a>
         <h3> Recieve Updates Regarding Finn Maps? </h3>
         <label for="name" class="formLabel">Name</label>
         <input type="text" placeholder = "Enter Full Name" name="name" class="formField" id="name">
@@ -63,7 +64,7 @@
     </form>
     <form name = "editForm" method="post" action="/">
       <div class = "formContainer" id ="editWidget">
-        <a href="#" class = "closeButton" id="closeEditWidget">x</a>
+        <a href="#" class = "closeButton" id="closeEditWidget">&times</a>
         <h3 id = "addPlaceHeader"> Suggest a Place for Finn to Visit! </h3>
         <label for="placename" class="formLabel">Place Name</label>
         <input type="text" placeholder = "Enter Name of The Place" name="placename" class="formField" id="placeName">

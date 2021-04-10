@@ -17,6 +17,7 @@ def create_db(db_file):
         conn = sqlite3.connect(db_file)
         if conn:conn.close()
 
+
 def check_table_exists(db_file,table_name):
     """
     Checks if a table exists in the specified database file

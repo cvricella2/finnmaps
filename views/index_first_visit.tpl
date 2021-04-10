@@ -6,6 +6,7 @@
     <title>Finn Maps</title>
     <link rel="stylesheet"  type="text/css" href="https://js.arcgis.com/4.18/esri/themes/light/main.css"></link>
     <link rel="stylesheet"  type="text/css" href="/static/main.css?version=1.0"></link>
+    <link rel="icon" href = "https://cvgeospatial.maps.arcgis.com/sharing/rest/content/items/6e2a077e2ed847d09606edd0094cba23/data">
     <script type="text/javascript" src="https://js.arcgis.com/4.18/"></script>
     <script type="text/javascript" src="/static/main.js?version=1.0"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -59,7 +60,7 @@
           visit somewhere and when any major changes happen to Finn Maps. Your name is not required unless you would like
           to recieve a personalized notification (e.g. Hi Karen!). If this ever changes you will be notified and given the option to opt out.
         </p>
-        <p class="widgetFooter" id="signupWidgetFooter"> All The Best 🐶</p>
+        <p class="widgetFooter" id="signupWidgetFooter"> All The Best  <img class = "smolFinnImg" src = "https://cvgeospatial.maps.arcgis.com/sharing/rest/content/items/6e2a077e2ed847d09606edd0094cba23/data"></p>
       </div>
     </form>
     <form name = "editForm" method="post" action="/">
@@ -82,7 +83,7 @@
           zoom in and out to see the change. If you need to delete a place, click "<b>Delete Place</b>" to delete it; you can only
           delete places you've added in your current session.
         </p>
-        <p class="widgetFooter" id="editWidgetFooter"> Thanks for The Suggestion! 🐶 </p>
+        <p class="widgetFooter" id="editWidgetFooter"> Thanks for The Suggestion! <img class = "smolFinnImg" src = "https://cvgeospatial.maps.arcgis.com/sharing/rest/content/items/6e2a077e2ed847d09606edd0094cba23/data"> </p>
       </div>
     </form>
     <div class="splashContainer" id="welcomeSplash">
@@ -101,7 +102,6 @@
       <div class="finnMapBtn" id="splashBtn">Got It!</div>
     </div>
     <script type="text/javascript">
-      console.log("It Ran");
       overlay.style.display="block";
       const splashBtn = document.getElementById("splashBtn");
       const welcomeSplash = document.getElementById("welcomeSplash");

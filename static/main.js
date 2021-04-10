@@ -531,6 +531,7 @@ require([
  function editComplete(msg,coord){
   addPlace = false;
   deletePlace = false;
+  placeTypeVal = "";
   viewDiv.style.cursor = "default";
   if (highlight) {
     highlight.remove();
@@ -694,8 +695,8 @@ view.when(function(){
       url: "/signupform",
       data:data,
       contentType:"application/json",
-      success: function(){createAlert(`Thanks For Signing Up ${name}, Finn Will Be In Touch!`,"white","black","viewDiv")},
-      error: function(){createAlert("Your Submission Failed! Please Try Again!","red","white","viewDiv",true,true,"white")}
+      success: function(){createAlert(`Thanks for signing up ${name}, Finn will be in touch!`,"white","black","viewDiv")},
+      error: function(){createAlert("Your submission failed, please try again!","red","white","viewDiv",true,true,"white")}
     })
     submitForm.reset();
     signupWidget.style.display = "none";
@@ -717,7 +718,7 @@ view.when(function(){
 
   editWidgetBtn.addEventListener("click",function(){
     addPlace = true;
-    createAlert("Place Ready To Add, Click Anywhere On The Map!","white","black","viewDiv")
+    createAlert("Place ready to add, click anywhere on the map!","white","black","viewDiv")
     viewDiv.style.cursor = "crosshair";
     editWidget.style.display = "none";
     overlay.style.display= "none";
@@ -725,7 +726,7 @@ view.when(function(){
 
   deleteBtn.addEventListener("click",function(){
     deletePlace = true;
-    createAlert("Delete Enabled, Click Place You Want To Delete","white","black","viewDiv")
+    createAlert("Delete enabled, click place you want to delete","white","black","viewDiv")
     viewDiv.style.cursor = "crosshair";
     editWidget.style.display = "none";
     overlay.style.display= "none";
@@ -763,8 +764,8 @@ view.when(function(){
         return deleteAttributes
       }).then(function(deleteAttributes){
         let data = {'oid':deleteAttributes[0]}
-        let msg = `${deleteAttributes[1]} was deleted! 🐶`
-        let errMsg = "Delete Failed! :C"
+        let msg = `${deleteAttributes[1]} was deleted! <img class = "smolFinnImg" src = "https://cvgeospatial.maps.arcgis.com/sharing/rest/content/items/6e2a077e2ed847d09606edd0094cba23/data">`
+        let errMsg = `Delete place failed, check deleting criteria and try again`
         data = JSON.stringify(data);
         $.ajax({
           type:"POST",
@@ -781,8 +782,8 @@ view.when(function(){
 
     if (addPlace === true) {
       let placeName = document.getElementById("placeName").value
-      let msg = `Added ${placeName} 🐶`;
-      let errMsg = "Add Place Failed! :C Check Parameters And Try Again"
+      let msg = `Added ${placeName} <img class = "smolFinnImg" src = "https://cvgeospatial.maps.arcgis.com/sharing/rest/content/items/6e2a077e2ed847d09606edd0094cba23/data">`;
+      let errMsg = "Add place failed, must enter both a valid name and place type"
       let data = {'name':placeName,'type':placeTypeVal,'coord':coord}
       data = JSON.stringify(data);
       $.ajax({

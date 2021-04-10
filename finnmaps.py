@@ -222,7 +222,8 @@ def delete_place():
     jres = request.json
     oid = jres['oid']
     key = request.get_cookie("sessionid")
-    logger.info(str(user_owns_place(fm_db,key,oid)))
+    logger.info( f"User owns place? {str(user_owns_place(fm_db,key,oid))}")
+    logger.info( f"User is admin? {str(ip in admin_ip)}")
     response.set_header('Content-Type','application/json')
     if user_owns_place(fm_db,key,oid) or ip in admin_ip:
         delete_feature(oid,place_layer)

@@ -233,6 +233,13 @@ def delete_place():
         return json.dumps({'message':'Delete Failed'})
 
 
+@application.route('/webhook', methods='POST')
+def respond():
+    print(request.json)
+    logger.info(request.json)
+    return response(status=200)
+
+
 
 if __name__ == '__main__':
     application.run(host="0.0.0.0")

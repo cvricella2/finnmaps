@@ -240,9 +240,6 @@ def agol_webhook():
     if request: logger.info(request)
     if request.json: logger.info(request.json)
     else: logger.info("Request json is empty")
-    return response(status=200)
-
-
 
 if __name__ == '__main__':
     application.run(host="0.0.0.0")

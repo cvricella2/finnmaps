@@ -16,6 +16,7 @@ TO DO:
 - Get app working on python anywhere; redirect domain to personal site
 """
 from bottle import Bottle,template,request,static_file,response
+import pandas as pd
 import os,sqlite3,json,phonenumbers,logging,sys,uuid
 from email_validator import validate_email, EmailNotValidError
 from phonenumbers.phonenumberutil import NumberParseException
@@ -30,10 +31,10 @@ config = ConfigParser()
 config.read(config_file)
 logger = logging.getLogger(__name__)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-sh_out = logging.StreamHandler(sys.stdout)
-sh_out.setLevel(logging.DEBUG)
+sh_out = logging.StreamHandler(sys.stderr)
+sh_out.setLevel(logging.INFO)
 sh_out.setFormatter(formatter)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 logger.addHandler(sh_out)
 logger.info("APP RUNNING")
 
@@ -190,8 +191,8 @@ def form_handler():
             return json.dumps({"message": "Application Submitted"})
         else:
             response.status = 400
-            return json.dumps({"message": "Application Failed"})
             logger.info("No valid number or email submitted, user not added")
+            return json.dumps({"message": "Application Failed"})
     except Exception:
         logger.error("",exc_info=True)
 
@@ -234,9 +235,11 @@ def delete_place():
 
 
 @application.route('/webhook', methods='POST')
-def respond():
-    print(request.json)
-    logger.info(request.json)
+def agol_webhook():
+    logger.info("Web Hook Route Hit")
+    if request: logger.info(request)
+    if request.json: logger.info(request.json)
+    else: logger.info("Request json is empty")
     return response(status=200)
 
 

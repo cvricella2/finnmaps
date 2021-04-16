@@ -234,7 +234,7 @@ def delete_place():
         return json.dumps({'message':'Delete Failed'})
 
 
-@application.route('/webhook', methods='POST')
+@application.route('/webhook', method='POST')
 def agol_webhook():
     logger.info("Web Hook Route Hit")
     if request: logger.info(request)

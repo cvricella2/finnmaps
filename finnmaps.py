@@ -16,13 +16,13 @@ TO DO:
 - Get app working on python anywhere; redirect domain to personal site
 """
 from bottle import Bottle,template,request,static_file,response
-import pandas as pd
-import os,sqlite3,json,phonenumbers,logging,sys,uuid
+import os,sqlite3,json,phonenumbers,logging,sys,uuid,requests,smtplib,ssl,re
 from email_validator import validate_email, EmailNotValidError
 from phonenumbers.phonenumberutil import NumberParseException
 from configparser import ConfigParser
 from arcgis  import GIS
 from arcgis import geometry,features
+from email.mime.text import MIMEText
 
 
 wdir = os.path.dirname(__file__)
@@ -52,6 +52,53 @@ def check_email(email):
         return valid.email
     except EmailNotValidError as e:
         logger.warning(e)
+
+
+def notify_users(sender_email,password,db_file,msg_body,url="https://finnmaps.org"):
+
+    context = ssl.create_default_context()
+
+    carriers = ["txt.att.net", "tmomail.net", "vzwpix.com", "messaging.sprintpcs.com", "vmobl.com", 
+    "mst5.tracfone.com", "mymetropcs.com", "sms.myboostmobile.com", "sms.cricketwireless.net", 
+    "text.republicwireless.com", "msg.fi.google.com"]
+
+    users = execute_sql(db_file,"SELECT * FROM user_info",True)
+
+    with smtplib.SMTP_SSL("smtp.gmail.com",465,context=context) as server:
+        server.login(sender_email,password)
+
+        for row in users:
+            name = row[0]
+            email = row[1]
+            number = row[2]
+            full_msg = f"Hi {name},\n{msg_body}\nCheck it out at: {url}"
+            msg = MIMEText(full_msg)
+            if number != 'None':
+                for carrier in carriers:
+                    format_num = "".join(re.findall(r'\b\d+\b',number))
+                    print(f"Sending Message to {row[0]} at {format_num} for {carrier}") 
+                    server.sendmail(sender_email,f"{format_num}@{carrier}",msg=msg.as_string())
+            else:
+                msg['Subject'] = 'Finn Maps Update'
+                server.sendmail(sender_email,email,msg=msg.as_string())
+
+
+def get_token(username,password,expiration=60):
+
+    """ Generate a token for AGOL """
+
+    data = {
+        'f': 'json',
+        'username': username,
+        'password': password,
+        'referer' : 'https://www.arcgis.com',
+        'expiration': expiration
+        }
+
+    url  = 'https://www.arcgis.com/sharing/rest/generateToken'
+    jres = requests.post(url, data=data, verify = True).json()
+    return jres['token']
+
 
 
 def check_number(number,region=None):
@@ -144,6 +191,8 @@ logger.info(f"Working Directory is {wdir}")
 agol_user = config.get("GIS_VAR","agol_user")
 agol_pw = config.get("GIS_VAR","agol_pw")
 agol_url = config.get("GIS_VAR","agol_url")
+notify_email = config.get("EMAIL_VAR","notify_email")
+email_pw = config.get("EMAIL_VAR","email_pw")
 finnmaps_hfl_id = config.get("GIS_VAR","hfl_id")
 place_layer = init_gis(agol_user,agol_pw,agol_url,finnmaps_hfl_id)
 fm_db = os.path.join(wdir,"dbs/finnmaps.db")
@@ -167,10 +216,14 @@ def send_img(filename):
 @application.route('/')
 def send_index():
     logger.info("Index Sent")
-    has_session = check_session(fm_db)
-    if has_session:
-        return template(os.path.join(wdir,"views/index.tpl"))
-    return template(os.path.join(wdir,"views/index_first_visit.tpl"))
+    info = {"center":[-72.991659,40.902234],"zoom":10,"place_name":'null',"default":'true'}
+    if request.query:
+        info = {"center":request.query.center,"zoom":request.query.zoom,
+                "place_name":request.query.place_name,"default":'false'}
+    else:
+        logger.info("No Query")
+    info["have_session"] = check_session(fm_db)
+    return template(os.path.join(wdir,"views/index.tpl"),info)
 
 @application.route('/signupform',method="POST")
 def form_handler():
@@ -234,12 +287,53 @@ def delete_place():
         return json.dumps({'message':'Delete Failed'})
 
 
-@application.route('/webhook', method='POST')
+@application.route('/1a6bd1eb-9c11-49f3-bd1c-4c1cd1801085', method="POST")
 def agol_webhook():
     logger.info("Web Hook Route Hit")
-    if request: logger.info(request)
-    if request.json: logger.info(request.json)
-    else: logger.info("Request json is empty")
+    try:
+        token = get_token(agol_user,agol_pw,expiration=5)
+        jres = request.json
+        logger.info(jres)
+        change_url = requests.utils.unquote(jres[0]['changesUrl'])
+        logger.info(change_url)
+        change_params = {
+            'f': 'json',
+            'token': token,
+            'outSR': 4326,
+            'includeRelated':"true"
+            }
+        change_jres = requests.post(url=change_url,data=change_params,verify=True).json()
+        status_url = change_jres['statusUrl'] + f"?token={token}&f=json"
+        logger.info(status_url)
+        result_url = ''
+        while result_url == '':
+            status = requests.get(url=status_url).json()
+            result_url = status['resultUrl']
+            logger.info(result_url)
+
+        result_url = result_url + f"?token={token}&f=json"
+        result = requests.get(url=result_url).json()
+
+        # Unpack result from the webhook payload:
+        # we know we want the visit table wich has id == 1
+        # it seems the the ids are one to one with the their position in the list (ids start at 0 for layers and tables in ArcGIS)
+        # So we get the edits, get the visit table, it's features, and the visit id for what was added
+        visit_id = result['edits'][1]['features']['adds'][0]['attributes']['visit_id']
+
+        # Next we query the places layer on agol and find the layer finn visit based on the visit_id
+        query_resp = place_layer.query(where=f"GlobalId = '{visit_id}' ",out_fields='name,ESRIGNSS_LONGITUDE,ESRIGNSS_LATITUDE')
+        logger.info(query_resp)
+        visit_place = query_resp.features[0].attributes['name']
+        coords = [query_resp.features[0].attributes['ESRIGNSS_LONGITUDE'],query_resp.features[0].attributes['ESRIGNSS_LATITUDE']]
+        query_url = f"https://finnmaps.org/?center={coords}&zoom=15&place_name={visit_place}".replace(" ","")
+        user_msg = f"Finn explored {visit_place} for the first time"
+
+        # Lastly we query the user table and notify everyone on the list that finn just visited the named place
+        # add any additional info
+        notify_users(notify_email,email_pw,fm_db,user_msg,query_url)
+
+    except:
+        logger.error("",exc_info=True)
 
 if __name__ == '__main__':
-    application.run(host="0.0.0.0")
+    application.run(port=80)

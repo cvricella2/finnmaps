@@ -8,8 +8,26 @@
     <link rel="stylesheet"  type="text/css" href="/static/main.css?version=1.0"></link>
     <link rel="icon" href = "https://cvgeospatial.maps.arcgis.com/sharing/rest/content/items/6e2a077e2ed847d09606edd0094cba23/data">
     <script type="text/javascript" src="https://js.arcgis.com/4.18/"></script>
-    <script type="text/javascript" src="/static/main.js?version=1.0"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript">
+
+      let center = {{center}}
+      let zoom = {{zoom}}
+      let getPlace = "{{place_name}}"
+
+      if ({{default}}) {
+        let windowWidth = window.innerWidth
+        if (windowWidth <= 2400) {
+            zoom = 9;
+        }
+
+        if (windowWidth <= 400) {
+            zoom = 7
+            center = [-73.091659,40.802234]
+        }  
+      } 
+     </script>
+     <script type="text/javascript" src="/static/main.js?version=1.0"></script>
+     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   </head>
   <body>
     <div id="flexContainer">
@@ -86,5 +104,31 @@
         <p class="widgetFooter" id="editWidgetFooter"> Thanks for The Suggestion! <img class = "smolFinnImg" src = "https://cvgeospatial.maps.arcgis.com/sharing/rest/content/items/6e2a077e2ed847d09606edd0094cba23/data"> </p>
       </div>
     </form>
+     % if not have_session:
+    <div class="splashContainer" id="welcomeSplash">
+      <h2>Welcome to Finn Maps</h2>
+      <div class="splashBody">
+        <p>Finn's a dog on a mission...to sniff as many things as possible
+        <br>
+        <br>
+        Enjoy viewing his adventures and feel free to suggest new places for him to visit! 
+        If at anytime you need help, click the help button in the top right corner
+        <br>
+        <br>
+        Thanks for visiting!
+        </p>
+      </div>
+      <div class="finnMapBtn" id="splashBtn">Got It!</div>
+    </div>
+    <script type="text/javascript">
+      overlay.style.display="block";
+      const splashBtn = document.getElementById("splashBtn");
+      const welcomeSplash = document.getElementById("welcomeSplash");
+      splashBtn.addEventListener("click",function(){
+          overlay.style.display="none";
+          welcomeSplash.style.display="none";
+      });
+     </script>
+     % end
   </body>
   </html>

@@ -93,7 +93,7 @@ require([
     const openForm = document.getElementById("openForm");
     const closeForm = document.getElementById("closeForm");
     const overlay = document.getElementById("overlay");
-    const number_field = document.getElementById("phone_number");
+    const numberField = document.getElementById("phone_number");
     const editForm = document.getElementsByName("editForm")[0];
     const editWidget = document.getElementById("editWidget");
     const editWidgetBtn = document.getElementById("editWidgetBtn");
@@ -355,14 +355,16 @@ require([
   }
 
 
-     function createSidebar(screenPoint) {
+     function createSidebar(screenPoint,oid) {
        relatedData = {};
        visited = true;
+       console.log(oid)
+       if (!(oid)) {oid = null}
        view.hitTest(screenPoint).then(function(response){
 
         if(response.results.length === 0 || response.results[0].graphic.layer.Id === 1) {
 
-          console.log("Triggerd")
+          console.log("No hit")
 
           if (highlight) {highlight.remove();}
 
@@ -376,11 +378,16 @@ require([
           headerImg.style.display = "none";
           addRankStars(attributes.finn_rank);
 
-            if (attributes.visited != 1) {
+          if (attributes.visited != 1) {
               visited = false;
             }
 
             return attributes.OBJECTID
+          }
+
+          if (oid) {
+            console.log("hit here")
+            return oid
           }
 
           headerTitle.innerHTML = "Finn Maps";
@@ -558,12 +565,13 @@ function editError(msg){
   var map = new Map({
     basemap:"osm"
   });
-
+  
+ 
   var view = new MapView({
     map: map,
     container: "viewDiv",
-    center: [-72.991659,40.902234],
-    zoom:10
+    center: center,
+    zoom:zoom
   });
 
   const root_url = "https://services2.arcgis.com/O48sbyo4drQXsscH/arcgis/rest/" +
@@ -644,14 +652,15 @@ function editError(msg){
 // All the DOM events are defined below----------------------------------------
 
 view.when(function(){
-  if (view.width < 2400){
-    view.zoom = 9
+  // Used for when get parameters are suplied with URL, if a place name to search is supplied
+  // This will initiate a search on the finn places feature layer
+  if (getPlace !== "null") {
+      searchWidget.activeSourceIndex = 1;
+      searchWidget.search(getPlace).then(function(){
+        searchWidget.activeSourceIndex = -1; // set back to all sources
+    })
   }
-  if (view.width < 400){
-    view.zoom = 7
-    view.center = [-73.091659,40.802234]
-  }
-})
+});
 
 // Below are all DOM events for the sidebar
  nextVisitButton.addEventListener("click", function(event){
@@ -672,9 +681,9 @@ view.when(function(){
  
 
 // Below are all DOM events for the sign up form
- number_field.addEventListener("input", function(){
-    let filter_value = number_field.value.replace('+1 ', '').match(/\d*/g).join('');
-    number_field.value = filter_value.replace(/(\d{0,3})\-?(\d{0,3})\-?(\d{0,4}).*/,'$1-$2-$3')
+ numberField.addEventListener("input", function(){
+    let filterValue = numberField.value.replace('+1 ', '').match(/\d*/g).join('');
+    numberField.value = filterValue.replace(/(\d{0,3})\-?(\d{0,3})\-?(\d{0,4}).*/,'$1-$2-$3')
                                      .replace(/\-+$/, '')
                                      .replace(/(\d{3})\-?(\d{3})\-?(\d{4})/,'+1 $1-$2-$3')
   });

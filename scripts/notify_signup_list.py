@@ -24,8 +24,7 @@ def execute_sql(db_file,sql,return_result=False):
     conn.close()
     
 
-#wdir = os.path.dirname(__file__)
-wdir = r"C:\repo\finnmaps\scripts"
+wdir = os.path.dirname(__file__)
 fm_db = os.path.join(os.path.dirname(wdir),"dbs/finnmaps.db")
 port = 465
 password = "@phineas2021S"

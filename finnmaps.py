@@ -325,7 +325,8 @@ def agol_webhook():
         logger.info(query_resp)
         visit_place = query_resp.features[0].attributes['name']
         coords = [query_resp.features[0].attributes['ESRIGNSS_LONGITUDE'],query_resp.features[0].attributes['ESRIGNSS_LATITUDE']]
-        query_url = f"https://finnmaps.org/?center={coords}&zoom=15&place_name={visit_place}".replace(" ","")
+        coords = str(coords).replace(" ","")
+        query_url = f"https://finnmaps.org/?center={coords}&zoom=15&place_name={visit_place}"
         user_msg = f"Finn explored {visit_place} for the first time"
 
         # Lastly we query the user table and notify everyone on the list that finn just visited the named place
@@ -336,4 +337,5 @@ def agol_webhook():
         logger.error("",exc_info=True)
 
 if __name__ == '__main__':
-    application.run(port=80)
+    # application.run(port=80)
+    application.run(host="0.0.0.0")

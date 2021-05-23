@@ -5,15 +5,6 @@ Created on Fri Oct  9 19:37:30 2020
 
 @author: cvric
 
-TO DO:
-- Add tick numbers to sidebar heading
-- Add empty stars to finn ranking for when it's less than 5 stars
-- Try to improve rendering of sidebar so content loads together
-- Figure out if possible to install arcgis on python anywhere; if not rewrite editing functions to use rest api instead.
-- Add layer on AGOL to store finns last reported location
-- Script to notify users who sign up
-- Ios script to update finn last reported location layer on AGOL
-- Get app working on python anywhere; redirect domain to personal site
 """
 from bottle import Bottle,template,request,static_file,response
 import os,sqlite3,json,phonenumbers,logging,sys,uuid,requests,smtplib,ssl,re
@@ -23,6 +14,7 @@ from configparser import ConfigParser
 from arcgis  import GIS
 from arcgis import geometry,features
 from email.mime.text import MIMEText
+import time
 
 
 wdir = os.path.dirname(__file__)
@@ -137,7 +129,8 @@ def init_gis(username,password,portal_url,hfl_id):
     logger.info("Finished Connecting...Getting the HFL")
     hfl = gis.content.get(hfl_id)
     fl = hfl.layers[0]
-    return fl
+    visit_table = hfl.tables[0]
+    return fl,visit_table
 
 
 def execute_sql(db_file,sql,return_result=False):
@@ -194,7 +187,9 @@ agol_url = config.get("GIS_VAR","agol_url")
 notify_email = config.get("EMAIL_VAR","notify_email")
 email_pw = config.get("EMAIL_VAR","email_pw")
 finnmaps_hfl_id = config.get("GIS_VAR","hfl_id")
-place_layer = init_gis(agol_user,agol_pw,agol_url,finnmaps_hfl_id)
+gis_content = init_gis(agol_user,agol_pw,agol_url,finnmaps_hfl_id)
+place_layer = gis_content[0]
+visit_table = gis_content[1]
 fm_db = os.path.join(wdir,"dbs/finnmaps.db")
 
 application = Bottle()
@@ -309,33 +304,39 @@ def agol_webhook():
         while result_url == '':
             status = requests.get(url=status_url).json()
             result_url = status['resultUrl']
-            logger.info(result_url)
+            logger.info("awaiting results url")
+            time.sleep(5)
 
         result_url = result_url + f"?token={token}&f=json"
         result = requests.get(url=result_url).json()
 
         # Unpack result from the webhook payload:
-        # we know we want the visit table wich has id == 1
+        # we know we want the visit table, it has id == 1
         # it seems the the ids are one to one with the their position in the list (ids start at 0 for layers and tables in ArcGIS)
         # So we get the edits, get the visit table, it's features, and the visit id for what was added
         visit_id = result['edits'][1]['features']['adds'][0]['attributes']['visit_id']
 
-        # Next we query the places layer on agol and find the layer finn visit based on the visit_id
+        # Next we query the places layer and visit table and find the layer finn visit based on the visit_id
+        # we get a count of the number of visits in the table, if its one or less we know it's a new place and notifyt he users
         query_resp = place_layer.query(where=f"GlobalId = '{visit_id}' ",out_fields='name,ESRIGNSS_LONGITUDE,ESRIGNSS_LATITUDE')
-        logger.info(query_resp)
-        visit_place = query_resp.features[0].attributes['name']
-        coords = [query_resp.features[0].attributes['ESRIGNSS_LONGITUDE'],query_resp.features[0].attributes['ESRIGNSS_LATITUDE']]
-        coords = str(coords).replace(" ","")
-        query_url = f"https://finnmaps.org/?center={coords}&zoom=15&place_name={visit_place}"
-        user_msg = f"Finn explored {visit_place} for the first time"
+        num_visits = visit_table.query(where=f"visit_id = '{visit_id}'",return_count_only=True)
+        if num_visits <= 1:
+            feature = query_resp.features[0]
+            visit_place = feature.attributes['name']
+            coords = [feature.attributes['ESRIGNSS_LONGITUDE'],feature.attributes['ESRIGNSS_LATITUDE']]
+            coords = str(coords).replace(" ","") # get rid of space in list, will mess up the get request
+            query_url = f"https://finnmaps.org/?center={coords}&zoom=15&place_name={visit_place}"
+            user_msg = f"Finn explored {visit_place} for the first time"
 
-        # Lastly we query the user table and notify everyone on the list that finn just visited the named place
-        # add any additional info
-        notify_users(notify_email,email_pw,fm_db,user_msg,query_url)
+            # Lastly we query the user table and notify everyone on the list that finn just visited the named place
+            # add any additional info
+            notify_users(notify_email,email_pw,fm_db,user_msg,query_url)
+        else:
+            logger.info("Finn already visited this place, not notifying users")
 
     except:
         logger.error("",exc_info=True)
 
 if __name__ == '__main__':
-    # application.run(port=80)
-    application.run(host="0.0.0.0")
+    application.run(port=80)
+    #application.run(host="0.0.0.0")

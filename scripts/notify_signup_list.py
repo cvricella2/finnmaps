@@ -2,6 +2,7 @@ import smtplib, ssl
 import os,sqlite3,re
 from email.mime.multipart import MIMEMultipart 
 from email.mime.text import MIMEText
+from configparser import ConfigParser
 
 
 def execute_sql(db_file,sql,return_result=False):
@@ -26,8 +27,11 @@ def execute_sql(db_file,sql,return_result=False):
 
 wdir = os.path.dirname(__file__)
 fm_db = os.path.join(os.path.dirname(wdir),"dbs/finnmaps.db")
+config_file = os.path.join(os.path.dirname(wdir),"config.ini")
+config = ConfigParser()
+config.read(config_file)
 port = 465
-password = "@phineas2021S"
+password = config.get("EMAIL_VAR","email_pw")
 
 context = ssl.create_default_context()
 

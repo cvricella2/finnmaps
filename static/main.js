@@ -370,7 +370,10 @@ require([
 
           let searchRes = response.screenPoint.result;
 
-          if (searchRes){
+          // Check the searchRes, sourceIndex 1 is finn places
+          // if anything else don't run this block
+          if (searchRes.sourceIndex === 1){
+          console.log("Hit search res check")
           let attributes = searchRes.feature.attributes;
           headerTitle.innerHTML = attributes.name;
           placeInfo.innerHTML = attributes.comment;
@@ -385,11 +388,15 @@ require([
             return attributes.OBJECTID
           }
 
+          // If an OID is provided directly return ealy with it
           if (oid) {
-            console.log("hit here")
+            console.log("Hit oid check")
             return oid
           }
 
+          // If none of the above If blocks are hit then we want to go back to starting
+          // sidebar apperance and return nothing. This will catch an error, which is fine for
+          // the use case. 
           headerTitle.innerHTML = "Finn Maps";
           headerSubTitle.style.display = "block";
           headerSubTitle.innerHTML = "Click any of the points on the map to view details on Finn's many adventures!";

@@ -402,7 +402,6 @@ require([
           headerSubTitle.innerHTML = "Click any of the points on the map to view details on Finn's many adventures!";
           headerImg.style.display = "block";
           visitHeader.style.display = "none";
-          searchWidget.clear();
           return
         } 
          let graphic = response.results[0].graphic

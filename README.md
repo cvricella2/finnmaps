@@ -1,6 +1,6 @@
 # Finn Maps - My First Full Stack Web Application
 
-Finn Maps is a full stack web application that shows places my dog Finn has been. Simple on the surface but somewhat complex and hacky underneath, I'm proud of this project and happy to share it with the world. 
+[Finn Maps](https://finnmaps.org) is a full stack web application that shows places my dog Finn has been. Simple on the surface but somewhat complex and hacky underneath, I'm proud of this project and happy to share it with the world. 
 
 ## Who is Finn?
 

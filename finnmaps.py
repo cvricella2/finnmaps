@@ -322,7 +322,9 @@ def agol_webhook():
         num_visits = visit_table.query(where=f"visit_id = '{visit_id}'",return_count_only=True)
         if num_visits <= 1:
             feature = query_resp.features[0]
-            visit_place = feature.attributes['name']
+            # Remove any trailing or leading spaces and convert any inbetween spaces to a "+"
+            # The browser will interpret this as a space 
+            visit_place = feature.attributes['name'].strip().replace(" ","+")
             coords = [feature.attributes['ESRIGNSS_LONGITUDE'],feature.attributes['ESRIGNSS_LATITUDE']]
             coords = str(coords).replace(" ","") # get rid of space in list, will mess up the get request
             query_url = f"https://finnmaps.org/?center={coords}&zoom=15&place_name={visit_place}"

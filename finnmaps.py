@@ -214,7 +214,7 @@ def send_index():
     info = {"center":[-72.991659,40.902234],"zoom":10,"place_name":'null',"default":'true'}
     if request.query:
         info = {"center":request.query.center,"zoom":request.query.zoom,
-                "place_name":request.query.place_name,"default":'false'}
+                "place_name":requests.utils.quote(request.query.place_name),"default":'false'}
     else:
         logger.info("No Query")
     info["have_session"] = check_session(fm_db)

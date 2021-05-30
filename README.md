@@ -30,7 +30,7 @@ Here is an ERD, as you can see the database is divided into two with all the map
 
 ## What Features Does Finn Maps Have?
 
-On first glance, Finn Maps just looks like a simple map viewer, but it does have a few features that make it a full stack application. The first thing to talk about is feature editing and how I implemented it. 
+On first glance, Finn Maps just looks like a simple map viewer, but it does have a couple features that make it a full stack application. The first thing to talk about is feature editing and how I implemented it. 
 
 ### Feature Editing
 
@@ -53,7 +53,7 @@ I know everyone who uses this application is probably dying to know when I updat
 
 ## Conclusion and References
 
-That's it folks, I'm done with Finn Maps, I learned a ton making this application and belive it or not I could have not done it alone. Special thanks to my good friends [Nick Muse](https://nickmuse.com/) and [Lawerence Vricella](https://www.anxietycult.com/). Nick was my server senpai during this project, I had never set up my own web server before or had much experience with Linux and he was a huge help in getting that all set up. Larry did all the art work for Finn Maps, check out his site and instagram @anxity.cult. Also a big thank you to all the open source communities out there that put together awesome documentation and answer forum questions. 
+That's it folks, I'm done with Finn Maps, I learned a ton making this application and belive it or not I could have not done it alone. Special thanks to my good friends [Nick Muse](https://nickmuse.com/) and [Lawerence Vricella](https://www.anxietycult.com/). Nick was my server senpai during this project, I had never set up my own web server before or had much experience with Linux and he was a huge help in getting that all set up. Larry did all the art work for Finn Maps, check out his site and instagram @anxiety.cult. Also thanks to all the developer communities out there that put together awesome documentation and answer forum questions. 
 
 ### References Not Found Via the Hyperlinks Above
 

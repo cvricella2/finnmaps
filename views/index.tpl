@@ -12,7 +12,7 @@
 
       let center = {{center}}
       let zoom = {{zoom}}
-      let getPlace = "{{place_name}}"
+      let getPlace = `${decodeURIComponent("{{place_name}}")}`
 
       if ({{default}}) {
         let windowWidth = window.innerWidth

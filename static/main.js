@@ -355,11 +355,10 @@ require([
   }
 
 
-     function createSidebar(screenPoint,oid) {
+     function createSidebar(screenPoint) {
        relatedData = {};
        visited = true;
-       console.log(oid)
-       if (!(oid)) {oid = null}
+
        view.hitTest(screenPoint).then(function(response){
 
         if(response.results.length === 0 || response.results[0].graphic.layer.Id === 1) {
@@ -372,7 +371,7 @@ require([
 
           // Check the searchRes, sourceIndex 1 is finn places
           // if anything else don't run this block
-          if (searchRes.sourceIndex === 1){
+          if (searchRes && searchRes.sourceIndex === 1){
           console.log("Hit search res check")
           let attributes = searchRes.feature.attributes;
           headerTitle.innerHTML = attributes.name;
@@ -388,12 +387,6 @@ require([
             return attributes.OBJECTID
           }
 
-          // If an OID is provided directly return ealy with it
-          if (oid) {
-            console.log("Hit oid check")
-            return oid
-          }
-
           // If none of the above If blocks are hit then we want to go back to starting
           // sidebar apperance and return nothing. This will catch an error, which is fine for
           // the use case. 
@@ -402,6 +395,7 @@ require([
           headerSubTitle.innerHTML = "Click any of the points on the map to view details on Finn's many adventures!";
           headerImg.style.display = "block";
           visitHeader.style.display = "none";
+          searchWidget.clear()
           return
         } 
          let graphic = response.results[0].graphic
@@ -508,34 +502,6 @@ require([
           console.log(error);
         });
        };
-  
-  // /**  All the stuff that should be done after an edit is made 
-  //  * @param msg Alert message for user after edit.
-  // */
-  // function editComplete(msg,coord){
-  //   //deletePlace = false;
-  //   addPlace = false;
-  //   viewDiv.style.cursor = "default";
-  //   if (highlight) {
-  //     highlight.remove();
-  //   }
-  //   let div = document.createElement("div");
-  //   div.className = "eventMsg";
-  //   div.classList.add("elementToFadeInAndOut");
-  //   div.classList.add("esri-component");
-  //   div.classList.add("esri-widget");
-  //   div.innerHTML=`<p> ${msg} </p>`;
-  //   let innerView = document.getElementsByClassName("esri-ui-inner-container")[0];
-  //   innerView.append(div);
-  //   setTimeout(function(){
-  //     innerView.removeChild(div);
-  //     finnPlaces.refresh();
-  //     view.goTo({
-  //       target:coord,
-  //       zoom:view.zoom+2
-  //     })
-  //   }, 2000);
-  // }
   
 
     /**  All the stuff that should be done after an edit is made 
@@ -753,7 +719,10 @@ view.when(function(){
 
   searchWidget.on("select-result",function(event){
     clearSidebar()
-    createSidebar(event)
+    console.log(event.sourceIndex);
+    if (event.sourceIndex === 1) {
+      createSidebar(event)
+    }
   })
 
   view.on("click",function(evt){

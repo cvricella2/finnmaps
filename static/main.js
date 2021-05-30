@@ -38,7 +38,6 @@ require([
           const closeBtn = document.createElement("span");
           closeBtn.className = "alertCloseBtn"
           closeBtn.innerHTML = "&times";
-          console.log(closeBtnColor);
           closeBtn.style.color = closeBtnColor;
           alertContainer.appendChild(closeBtn);
           closeBtn.addEventListener("click", function () {
@@ -363,8 +362,6 @@ require([
 
         if(response.results.length === 0 || response.results[0].graphic.layer.Id === 1) {
 
-          console.log("No hit")
-
           if (highlight) {highlight.remove();}
 
           let searchRes = response.screenPoint.result;
@@ -395,7 +392,7 @@ require([
           headerSubTitle.innerHTML = "Click any of the points on the map to view details on Finn's many adventures!";
           headerImg.style.display = "block";
           visitHeader.style.display = "none";
-          searchWidget.clear()
+          searchWidget.clear();
           return
         } 
          let graphic = response.results[0].graphic
@@ -403,8 +400,9 @@ require([
          // new feature is clicked.
          view.whenLayerView(graphic.layer).then(function(layerView){
 
+          console.log("Clearing Search and Highlight")
+          searchWidget.clear();
           if (highlight) {
-             searchWidget.clear();
              highlight.remove();
           }
 
@@ -628,9 +626,7 @@ view.when(function(){
   // This will initiate a search on the finn places feature layer
   if (getPlace !== "null") {
       searchWidget.activeSourceIndex = 1;
-      searchWidget.search(getPlace).then(function(){
-        searchWidget.activeSourceIndex = -1; // set back to all sources
-    })
+      searchWidget.search(getPlace)
   }
 });
 
@@ -719,7 +715,11 @@ view.when(function(){
 
   searchWidget.on("select-result",function(event){
     clearSidebar()
-    console.log(event.sourceIndex);
+    headerTitle.innerHTML = "Finn Maps";
+    headerSubTitle.style.display = "block";
+    headerSubTitle.innerHTML = "Click any of the points on the map to view details on Finn's many adventures!";
+    headerImg.style.display = "block";
+    visitHeader.style.display = "none";
     if (event.sourceIndex === 1) {
       createSidebar(event)
     }

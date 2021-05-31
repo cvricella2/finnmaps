@@ -4,7 +4,7 @@
 
 ## Who is Finn?
 
-Finn (Phineas), also known as Master Finn, Finn Master Flex, Finny Wiggles, Finn Boi, Finny Beans, Dobby and like a 100 other nicknames, is my 9 year old lab mix. I adopted him as a puppy from the [North Shore Animal League](https://www.animalleague.org/) in Long Island, NYS. He's an easy going dog who's favorite thing to do is go around sniffing new places. 
+Finn (short for Phineas), also known as Master Finn, Finn Master Flex, Finny Wiggles, Finn Boi, Finny Beans, Dobby and like a 100 other nicknames, is my 9 year old lab mix. I adopted him as a puppy from the [North Shore Animal League](https://www.animalleague.org/) in Long Island, NYS. He's an easy going dog who's favorite thing to do is go around sniffing new places. 
 
 ![Pic of Finn](https://github.com/cvricella2/finnmaps/blob/main/images/finn%20couch.jpg)
 

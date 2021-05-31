@@ -518,7 +518,7 @@ require([
     createAlert(msg,"white","black","viewDiv")
     view.goTo({
       target:coord,
-      zoom:view.zoom+1
+      zoom:view.zoom+2
     })
   }, 1000);
 }
@@ -629,6 +629,10 @@ view.when(function(){
       searchWidget.search(getPlace)
   }
 });
+
+finnPlaces.on("layerview-create",function(){
+  finnPlaces.refreshinterval = .01;
+})
 
 // Below are all DOM events for the sidebar
  nextVisitButton.addEventListener("click", function(event){

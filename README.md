@@ -4,7 +4,7 @@
 
 ## Who is Finn?
 
-Finn (full name Phineas Johnson Vricella), also known as Master Finn, Finn Master Flex, Finny Wiggles, Finn Boi, Finny Beans, Dobby and like a 100 other nicknames, is my 9 year old lab mix. I adopted him as a puppy from the [North Shore Animal League](https://www.animalleague.org/) in Long Island, NYS. He's an easy going dog who's favorite thing to do is go around sniffing new places. 
+Finn (Phineas), also known as Master Finn, Finn Master Flex, Finny Wiggles, Finn Boi, Finny Beans, Dobby and like a 100 other nicknames, is my 9 year old lab mix. I adopted him as a puppy from the [North Shore Animal League](https://www.animalleague.org/) in Long Island, NYS. He's an easy going dog who's favorite thing to do is go around sniffing new places. 
 
 ![Pic of Finn](https://github.com/cvricella2/finnmaps/blob/main/images/finn%20couch.jpg)
 
@@ -53,7 +53,7 @@ I know everyone who uses this application is probably dying to know when I updat
 
 ## Conclusion and References
 
-That's it folks, I'm done with Finn Maps, I learned a ton making this application and belive it or not I could have not done it alone. Special thanks to my good friends [Nick Muse](https://nickmuse.com/) and [Lawerence Vricella](https://www.anxietycult.com/). Nick was my server senpai during this project, I had never set up my own web server before or had much experience with Linux and he was a huge help in getting that all set up. Larry did all the art work for Finn Maps, check out his site and instagram @anxiety.cult. Also thanks to all the developer communities out there that put together awesome documentation and answer forum questions. 
+That's it folks, I'm done with Finn Maps, I learned a ton making this application and belive it or not I could have not done it alone. Special thanks to my friends [Nick Muse](https://nickmuse.com/) and [Lawerence Vricella](https://www.anxietycult.com/). Nick was my server senpai during this project, I had never set up my own web server before or had much experience with Linux and he was a huge help in getting that all set up. Larry did all the art work for Finn Maps, check out his site and instagram @anxiety.cult. Also thanks to all the developer communities out there that put together awesome documentation and answer forum questions. 
 
 ### References Not Found Via the Hyperlinks Above
 

@@ -328,7 +328,8 @@ def agol_webhook():
             coords = [feature.attributes['ESRIGNSS_LONGITUDE'],feature.attributes['ESRIGNSS_LATITUDE']]
             coords = str(coords).replace(" ","") # get rid of space in list, will mess up the get request
             query_url = f"https://finnmaps.org/?center={coords}&zoom=15&place_name={visit_place}"
-            user_msg = f"Finn explored {visit_place} for the first time"
+            # put the spaces back in the for the user message
+            user_msg = f"Finn explored {visit_place.replace('+',' ')} for the first time"
 
             # Lastly we query the user table and notify everyone on the list that finn just visited the named place
             # add any additional info

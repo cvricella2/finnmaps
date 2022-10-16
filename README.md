@@ -64,3 +64,8 @@ That's it folks, I'm done with Finn Maps, I learned a ton making this applicatio
 - https://www.tecmint.com/disable-selinux-in-centos-rhel-fedora/ (Temp disable SELinux)
 - https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/deploying_different_types_of_servers/setting-apache-http-server_deploying-different-types-of-servers
 - https://www.rootusers.com/how-to-configure-an-apache-virtual-host/
+
+### Update
+
+- Finnmaps is no longer running on (and has not been for sometime) an AWS/RHEL instance; I've switched to Linode/CentOS for ease of use and low cost. 
+- Finnmaps is no longer using Apache to serve up the application. The app is now being run by uWSGI with NGINX reverse proxying request to it. This set up is simpler to implement for a python applicaiton...alternatively gunicorn + supervisord could be used instead of uWSGI which makes this even easier.

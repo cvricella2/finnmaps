@@ -544,8 +544,7 @@ function editError(msg){
     zoom:zoom
   });
 
-  const root_url = "https://services2.arcgis.com/O48sbyo4drQXsscH/arcgis/rest/" +
-                   "services/Finn_Maps_HFS_Public/FeatureServer";
+  // root_url comes from config.ini and is accessed from views/index.tpl
   let finnPlaces = new FeatureLayer({
     url:`${root_url}/0`,
     Id:0

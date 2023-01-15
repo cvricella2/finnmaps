@@ -10,6 +10,7 @@
     <script type="text/javascript" src="https://js.arcgis.com/4.19/"></script>
     <script type="text/javascript">
 
+      let root_url = '{{root_url}}'
       let center = {{center}}
       let zoom = {{zoom}}
       let getPlace = `${decodeURIComponent("{{place_name}}")}`

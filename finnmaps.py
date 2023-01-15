@@ -189,6 +189,7 @@ agol_url = config.get("GIS_VAR","agol_url")
 notify_email = config.get("EMAIL_VAR","notify_email")
 email_pw = config.get("EMAIL_VAR","email_pw")
 finnmaps_hfl_id = config.get("GIS_VAR","hfl_id")
+root_url = config.get("GIS_VAR", "root_url")
 gis_content = init_gis(agol_user,agol_pw,agol_url,finnmaps_hfl_id)
 place_layer = gis_content[0]
 visit_table = gis_content[1]
@@ -220,7 +221,8 @@ def send_index():
     else:
         logger.info("No Query")
     info["have_session"] = check_session(fm_db)
-    return template(os.path.join(wdir,"views/index.tpl"),info)
+    info["root_url"] = root_url 
+    return template(os.path.join(wdir,"views/index.tpl"), info)
 
 @application.route('/signupform',method="POST")
 def form_handler():

@@ -65,12 +65,14 @@ def notify_users(sender_email,password,db_file,msg_body,url="https://finnmaps.or
             number = row[2]
             full_msg = f"Hi {name},\n{msg_body}\nCheck it out at: {url}"
             msg = MIMEText(full_msg)
+            logger.info(f"Working on {name}")
             if number != 'None':
                 for carrier in carriers:
                     format_num = "".join(re.findall(r'\b\d+\b',number))
-                    print(f"Sending Message to {row[0]} at {format_num} for {carrier}") 
+                    logger.info(f"Sending message to {row[0]} at {format_num} for {carrier}") 
                     server.sendmail(sender_email,f"{format_num}@{carrier}",msg=msg.as_string())
-            else:
+            if email != 'None':
+                logger.info(f"Sending email to {email}")
                 msg['Subject'] = 'Finn Maps Update'
                 server.sendmail(sender_email,email,msg=msg.as_string())
 
@@ -247,6 +249,7 @@ def form_handler():
 
 @application.route('/addplace',method="POST")
 def add_place():
+    logger.info("Add Place Route Hit")
     jres = request.json
     coord = jres['coord']
     name = jres['name']
@@ -314,28 +317,31 @@ def agol_webhook():
         # we know we want the visit table, it has id == 1
         # it seems the the ids are one to one with the their position in the list (ids start at 0 for layers and tables in ArcGIS)
         # So we get the edits, get the visit table, it's features, and the visit id for what was added
-        visit_id = result['edits'][1]['features']['adds'][0]['attributes']['visit_id']
+        logger.info(result['edits'])
+        new_visit = result['edits'][1]['features']['adds']
+        if new_visit:
+            visit_id = new_visit[0]['attributes']['visit_id']
+            # Next we query the places layer and visit table and find the layer finn visit based on the visit_id
+            # we get a count of the number of visits in the table, if its one or less we know it's a new place and notifyt he users
+            query_resp = place_layer.query(where=f"GlobalId = '{visit_id}' ",out_fields='name,ESRIGNSS_LONGITUDE,ESRIGNSS_LATITUDE')
+            num_visits = visit_table.query(where=f"visit_id = '{visit_id}'",return_count_only=True)
+            logger.info(f"Number of visits: {num_visits}")
+            if num_visits <= 1:
+                feature = query_resp.features[0]
+                # Remove any trailing or leading spaces and convert any inbetween spaces to a "+"
+                # The browser will interpret this as a space 
+                visit_place = feature.attributes['name'].strip().replace(" ","+")
+                coords = [feature.attributes['ESRIGNSS_LONGITUDE'],feature.attributes['ESRIGNSS_LATITUDE']]
+                coords = str(coords).replace(" ","") # get rid of space in list, will mess up the get request
+                query_url = f"http://162-216-18-219.ip.linodeusercontent.com/?center={coords}&zoom=15&place_name={visit_place}"
+                # put the spaces back in the for the user message
+                user_msg = f"Finn explored {visit_place.replace('+',' ')} for the first time"
 
-        # Next we query the places layer and visit table and find the layer finn visit based on the visit_id
-        # we get a count of the number of visits in the table, if its one or less we know it's a new place and notifyt he users
-        query_resp = place_layer.query(where=f"GlobalId = '{visit_id}' ",out_fields='name,ESRIGNSS_LONGITUDE,ESRIGNSS_LATITUDE')
-        num_visits = visit_table.query(where=f"visit_id = '{visit_id}'",return_count_only=True)
-        if num_visits <= 1:
-            feature = query_resp.features[0]
-            # Remove any trailing or leading spaces and convert any inbetween spaces to a "+"
-            # The browser will interpret this as a space 
-            visit_place = feature.attributes['name'].strip().replace(" ","+")
-            coords = [feature.attributes['ESRIGNSS_LONGITUDE'],feature.attributes['ESRIGNSS_LATITUDE']]
-            coords = str(coords).replace(" ","") # get rid of space in list, will mess up the get request
-            query_url = f"https://finnmaps.org/?center={coords}&zoom=15&place_name={visit_place}"
-            # put the spaces back in the for the user message
-            user_msg = f"Finn explored {visit_place.replace('+',' ')} for the first time"
-
-            # Lastly we query the user table and notify everyone on the list that finn just visited the named place
-            # add any additional info
-            notify_users(notify_email,email_pw,fm_db,user_msg,query_url)
-        else:
-            logger.info("Finn already visited this place, not notifying users")
+                # Lastly we query the user table and notify everyone on the list that finn just visited the named place
+                # add any additional info
+                notify_users(notify_email,email_pw,fm_db,user_msg,query_url)
+            else:
+                logger.info("Finn already visited this place, not notifying users")
 
     except:
         logger.error("",exc_info=True)
